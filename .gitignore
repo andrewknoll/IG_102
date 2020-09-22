@@ -1,0 +1,5 @@
+*.o
+.vscode
+
+# Include all executables here
+main
