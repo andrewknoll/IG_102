@@ -20,6 +20,8 @@ class Coordinates{
         void setW(float w);
 
         void setAll(float x, float y, float z);
+
+        Coordinates baseChange(Coordinates o, Coordinates u, Coordinates v, Coordinates w);
 };
 
 #endif

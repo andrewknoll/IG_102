@@ -51,3 +51,7 @@ void Coordinates::setAll(float x, float y, float z){
     c[1] = y;
     c[2] = z;
 }
+
+Coordinates Coordinates::baseChange(Coordinates o, Coordinates u, Coordinates v, Coordinates w){
+
+}
