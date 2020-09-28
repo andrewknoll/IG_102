@@ -1,13 +1,15 @@
 CC=g++
-CFLAGS=-Wall
+CFLAGS=-Wall -std=c++11
 coord=Coordinates
 dir=Direction
 point=Point
+matrix=Matrix
+oper=Operations
 main=main
 
 ##link
-$(main): $(coord).o $(dir).o $(point).o $(main).o
-	$(CC) $(CFLAGS) $(coord).o $(dir).o $(point).o $(main).o -o $(main)
+$(main): $(coord).o $(dir).o $(point).o $(matrix).o $(oper).o $(main).o
+	$(CC) $(CFLAGS) $(coord).o $(dir).o $(point).o $(matrix).o $(oper).o $(main).o -o $(main)
 
 ##compile
 $(coord).o: $(coord).cpp
@@ -18,6 +20,12 @@ $(dir).o: $(dir).cpp
 
 $(point).o: $(point).cpp
 	$(CC) $(point).cpp -c
+
+$(matrix).o: $(matrix).cpp
+	$(CC) $(matrix).cpp -c
+
+$(oper).o: $(oper).cpp
+	$(CC) $(oper).cpp -c
 
 $(main).o: $(main).cpp
 	$(CC) $(main).cpp -c

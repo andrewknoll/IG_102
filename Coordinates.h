@@ -1,6 +1,11 @@
 #ifndef COORDINATES
 #define COORDINATES
 
+#include <iostream>
+#include "Matrix.cpp"
+
+using namespace std;
+
 class Coordinates{
     protected:
         float c[4];
@@ -9,19 +14,25 @@ class Coordinates{
         Coordinates();
         Coordinates(float x, float y, float z, float w);
 
-        float getX() const;
-        float getY() const;
-        float getZ() const;
-        float getW() const;
+        virtual float getX() const;
+        virtual float getY() const;
+        virtual float getZ() const;
+        virtual float getW() const;
 
-        void setX(float x);
-        void setY(float y);
-        void setZ(float z);
-        void setW(float w);
+        virtual void setX(float x);
+        virtual void setY(float y);
+        virtual void setZ(float z);
+        virtual void setW(float w);
 
-        void setAll(float x, float y, float z);
+        virtual void setAll(float x, float y, float z);
+        virtual const float* getVector() const;
 
-        Coordinates baseChange(Coordinates o, Coordinates u, Coordinates v, Coordinates w);
+        virtual float& operator[](int i);
+        virtual float  operator[](int i) const;
+
+        virtual Coordinates operator* (Matrix4 m) const;
 };
+
+ostream& operator<<(ostream& os, const Coordinates& coord);
 
 #endif

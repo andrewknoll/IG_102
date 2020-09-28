@@ -52,6 +52,33 @@ void Coordinates::setAll(float x, float y, float z){
     c[2] = z;
 }
 
-Coordinates Coordinates::baseChange(Coordinates o, Coordinates u, Coordinates v, Coordinates w){
+const float* Coordinates::getVector() const{
+    return c;    
+}
 
+float& Coordinates::operator[](int i){
+    return c[i];
+}
+
+float Coordinates::operator[](int i) const {
+    return c[i];
+}
+
+//Coordinates * Matrix operator
+Coordinates Coordinates::operator* (Matrix4 m) const{
+    Coordinates res;
+
+    for(int i = 0; i < 4; i++){
+        res[i] = 0.0;
+        for(int j = 0; j < 4; j++){
+            res[i] += c[j] * m[j][i];
+        }
+    }
+    return res;
+}
+
+ostream& operator<<(ostream& os, const Coordinates& coord)
+{
+    os << coord.getX() << ' ' << coord.getY() << ' ' << coord.getZ() << ' ' << coord.getW();
+    return os;
 }

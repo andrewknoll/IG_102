@@ -1,9 +1,14 @@
-
 struct Matrix4{
     float m[4][4];
     
+    
+    //Array access operator
+    float* operator[] (const int i){
+        return m[i];
+    }
 
-    Matrix4 operator* (Matrix4& operand){
+    //Matrix * Matrix operator
+    Matrix4 operator* (const Matrix4& operand){
         Matrix4 res;
 
         //division in submatrices of this
@@ -40,12 +45,13 @@ struct Matrix4{
             }
         }
         
+        return res;
 
     }
 
     //Multiplication of two 2x2 matrices using Strassen's algorithm
     //Stores the result in "c"
-    void strassen2 (float a[2][2], float b[2][2], float c[2][2]){
+    void strassen2 (const float a[2][2], const float b[2][2], float c[2][2]){
         float aux[7];
 
         aux[0] = (a[0][0] +  a[1][1]) * (b[0][0] + b[1][1]);
@@ -63,7 +69,7 @@ struct Matrix4{
     }
 
     //Obtains a 2x2 matrix in "sub"
-    void submatrix(int part, float sub[2][2]){
+    void submatrix(const int part, float sub[2][2]) const{
         int i0 = part / 2;  //Row of submatrices
         int j0 = part % 2;  //Column of submatrices
 
@@ -77,8 +83,14 @@ struct Matrix4{
     }
 
     //Sets component i,j of matrix m to value n
-    void set(int i, int j, float n){
+    void set(const int i, const int j, const float n){
         m[i][j] = n;
     }
 
+    //Sets column j of matrix m to c
+    void setColumn(const int j, const float c[4]){
+        for(int i = 0; i < 4; i++){
+            m[i][j] = c[i];
+        }
+    }
 };

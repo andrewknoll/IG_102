@@ -6,6 +6,7 @@
 #include <iostream>
 #include "Point.h"
 #include "Direction.h"
+#include "Operations.h"
 
 #define THRESHOLD 1.0e-6
 
@@ -65,16 +66,39 @@ struct PlanetaryStation{
 
 
 int main(){
-    float v[9];
+    float v[15];
 
-    for(int i = 0; i < 9; i++){
+    for(int i = 0; i < 15; i++){
+        if(i == 0) cout << "Original point / direction:" << endl;
+        else if(i == 3){
+            
+            cout << "Axis u:" << endl;
+        }
+        else if(i == 6){
+            
+            cout << "Axis v:" << endl;
+        }
+        else if(i == 9){
+            
+            cout << "Axis w:" << endl;
+        }
+        else if(i == 12){
+            
+            cout << "Origin point:" << endl;
+        }
         cin >> v[i];
         cout << "He cogido v[" << i << "]" << endl;
     }
-    Planet p;
-    p.setCoords(v);
+    Point original(v[0], v[1], v[2]);
+    Direction ax_u(v[3], v[4], v[5]);
+    Direction ax_v(v[6], v[7], v[8]);
+    Direction ax_w(v[9], v[10], v[11]);
+    Point o(v[12], v[13], v[14]);
 
-    cout << "Yay" << endl;
+    Coordinates result = baseChange(original, o, ax_u, ax_v, ax_w);
+
+
+    cout << result << endl;
 
     return 0;
 }
