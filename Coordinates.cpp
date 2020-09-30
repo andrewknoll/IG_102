@@ -64,6 +64,48 @@ float Coordinates::operator[](int i) const {
     return c[i];
 }
 
+float& Coordinates::operator[](char a){
+    char i = tolower(a);
+    switch(i){
+        case 'x':
+        return c[0];
+
+        case 'y':
+        return c[1];
+
+        case 'z':
+        return c[2];
+
+        case 'w':
+        return c[3];
+
+        default:
+        assert(i=='x' || i=='y' || i=='z' || i=='w');
+    }
+    return c[0];
+}
+
+float Coordinates::operator[](char a) const {
+    char i = tolower(a);
+    switch(i){
+        case 'x':
+        return c[0];
+
+        case 'y':
+        return c[1];
+
+        case 'z':
+        return c[2];
+
+        case 'w':
+        return c[3];
+
+        default:
+        assert(i=='x' || i=='y' || i=='z' || i=='w');
+    }
+    return 0;
+}
+
 //Coordinates * Matrix operator
 Coordinates Coordinates::operator* (Matrix4 m) const{
     Coordinates res;

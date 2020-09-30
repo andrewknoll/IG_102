@@ -1,6 +1,42 @@
 struct Matrix4{
     float m[4][4];
     
+
+    //Identity matrix
+    Matrix4 identity(){
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                m[i][j] = (i==j)? 1 : 0;
+            }
+        }
+    }
+
+    float det3(float mat3[3][3]){
+        
+    }
+
+    float det(){
+        float mat3[3][3];
+        int aux = 0;
+        float result = 0.0;
+        for(int n = 0; n < 4; n++){
+            for(int i = 0; i < 4; i++){
+                if(i != n){
+                    for(int j = 1; j < 4; j++){
+                        mat3[aux][j-1] = m[i][j];
+                } 
+                aux++;
+                }
+            }
+            if(n%2 == 0){
+                result += m[n][0] * det3(mat3);
+            }
+            else{
+                result -= m[n][0] * det3(mat3);
+            }
+            
+        }
+    }
     
     //Array access operator
     float* operator[] (const int i){

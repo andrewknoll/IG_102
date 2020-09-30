@@ -9,7 +9,7 @@ class Direction : public Coordinates{
         Direction();
         Direction(float x, float y, float z);
 
-        double modulus();
+        float modulus();
 };
 
 #endif

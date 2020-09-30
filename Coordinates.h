@@ -2,6 +2,7 @@
 #define COORDINATES
 
 #include <iostream>
+#include <cassert>
 #include "Matrix.cpp"
 
 using namespace std;
@@ -29,6 +30,8 @@ class Coordinates{
 
         virtual float& operator[](int i);
         virtual float  operator[](int i) const;
+        virtual float& operator[](char c);
+        virtual float  operator[](char c) const;
 
         virtual Coordinates operator* (Matrix4 m) const;
 };

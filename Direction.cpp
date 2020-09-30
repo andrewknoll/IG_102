@@ -12,6 +12,6 @@ Direction::Direction(float x, float y, float z){
     c[3] = 0.0;
 }
 
-double Direction::modulus(){
+float Direction::modulus(){
     return sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
 }

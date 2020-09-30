@@ -37,15 +37,15 @@ struct Planet{
 };
 
 struct PlanetaryStation{
-    double inclination;
-    double azimuth;
+    float inclination;
+    float azimuth;
     Planet* planet;
 
     void setPlanet(Planet& p){
         planet = &p;
     }
 
-    void setInclination(double i){
+    void setInclination(float i){
         if(i > 0 && i < M_PI){
             inclination = i;
         }
@@ -54,7 +54,7 @@ struct PlanetaryStation{
         }
     }
 
-    void setAzimuth(double a){
+    void setAzimuth(float a){
         if(a > -M_PI && a <= M_PI){
             azimuth = a;
         }

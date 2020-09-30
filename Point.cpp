@@ -11,7 +11,3 @@ Point::Point(float x, float y, float z){
     c[2] = z;
     c[3] = 1.0;
 }
-
-Direction Point::operator-(Point const &operand){
-    return Direction(c[0] - operand.getX(), c[1] - operand.getY(), c[2] - operand.getZ());
-}
