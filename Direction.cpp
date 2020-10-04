@@ -1,5 +1,5 @@
 #include <cmath>
-#include "Direction.h"
+#include "Direction.hpp"
 
 Direction::Direction(){
     Coordinates();

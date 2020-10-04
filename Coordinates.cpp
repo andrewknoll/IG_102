@@ -1,4 +1,4 @@
-#include "Coordinates.h"
+#include "Coordinates.hpp"
 
 Coordinates::Coordinates(){
     c[0] = 0.0;
@@ -113,7 +113,7 @@ Coordinates Coordinates::operator* (Matrix4 m) const{
     for(int i = 0; i < 4; i++){
         res[i] = 0.0;
         for(int j = 0; j < 4; j++){
-            res[i] += c[j] * m[j][i];
+            res[i] += c[j] * m.get(j, i);
         }
     }
     return res;

@@ -3,7 +3,7 @@ CFLAGS=-Wall -std=c++11
 coord=Coordinates
 dir=Direction
 point=Point
-matrix=Matrix
+matrix=Matrix4
 oper=Operations
 main=main
 

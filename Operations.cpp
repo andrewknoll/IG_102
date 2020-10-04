@@ -1,4 +1,4 @@
-#include "Operations.h"
+#include "Operations.hpp"
 
 // Point + Direction
 Point operator+(const Point p, const Direction d){
@@ -16,7 +16,7 @@ Direction operator-(Point const &p1, Point const &p2){
 }
 
 // Direction + Direction
-Direction operator-(Direction const &d1, Direction const &d2){
+Direction operator+(Direction const &d1, Direction const &d2){
     return Direction(d1['x'] + d2['x'], d1['y'] + d2['y'], d1['z'] + d2['z']);
 }
 

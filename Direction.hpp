@@ -1,4 +1,4 @@
-#include "Coordinates.h"
+#include "Coordinates.hpp"
 
 #ifndef DIRECTION
 #define DIRECTION
