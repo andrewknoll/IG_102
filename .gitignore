@@ -1,5 +1,7 @@
 *.o
 .vscode
+.ppm
+images/
 
 # Include all executables here
 main
