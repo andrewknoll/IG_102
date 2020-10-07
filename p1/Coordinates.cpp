@@ -106,6 +106,7 @@ float Coordinates::operator[](char a) const {
     return 0;
 }
 
+//unused
 //Coordinates * Matrix operator
 Coordinates Coordinates::operator* (Matrix4 m) const{
     Coordinates res;

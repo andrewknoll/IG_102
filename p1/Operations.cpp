@@ -51,6 +51,19 @@ Direction cross(Direction const &d1, Direction const &d2){
     return Direction(d1['y'] * d2['z'] - d1['z'] * d2['y'], d1['z'] * d2['x'] - d1['x'] * d2['z'], d1['x'] * d2['y'] - d1['y'] * d2['x']);
 }
 
+//Matrix * Coordinates operator
+Coordinates operator* (Matrix4 m, Coordinates coord){
+    Coordinates res;
+
+    for(int i = 0; i < 4; i++){
+        res[i] = 0.0;
+        for(int j = 0; j < 4; j++){
+            res[i] += m.get(i, j) * coord[j];
+        }
+    }
+    return res;
+}
+
 
 Coordinates translate(Coordinates& coord, const float tx, const float ty, const float tz){
     Matrix4 mat;
@@ -60,7 +73,7 @@ Coordinates translate(Coordinates& coord, const float tx, const float ty, const 
     mat.set(2, 3, tz);
     mat.set(3, 3, 0.0);
 
-    return coord * mat;
+    return mat * coord;
 }
 
 Coordinates scale(Coordinates& coord, const float sx, const float sy, const float sz){
@@ -70,7 +83,7 @@ Coordinates scale(Coordinates& coord, const float sx, const float sy, const floa
     mat.set(2, 2, sz);
     mat.set(3, 3, 1.0);
 
-    return coord * mat;
+    return mat * coord;
 }
 
 Coordinates rotate(Coordinates& coord, const char axis, const float angle){
@@ -99,7 +112,7 @@ Coordinates rotate(Coordinates& coord, const char axis, const float angle){
             break;
     }
 
-    return coord * mat;
+    return mat * coord;
 }
 template <class T>
 T baseChangeGeneric(T& coord, const Point o, const Direction u, const Direction v, const Direction w){
@@ -109,7 +122,7 @@ T baseChangeGeneric(T& coord, const Point o, const Direction u, const Direction 
     mat.setColumn(2, w.getVector());
     mat.setColumn(3, o.getVector());
 
-    return coord * mat;
+    return mat * coord;
 }
 
 Point baseChange(Point& coord, const Point o, const Direction u, const Direction v, const Direction w){
