@@ -55,7 +55,7 @@ Matrix4 Matrix4::inverse(){
         for(int j = 0; j < 4; j++){
             removeRowColumn(i, j, aux);
 
-            //this will give us the adjunct matrix (j and i are switched)
+            //this will give us the adjugate matrix (j and i are switched)
             if((i+j)%2 == 0){
                 adjunct.set(j, i, det3(aux));
             }
@@ -82,9 +82,6 @@ Matrix4 Matrix4::inverse(){
     }
     
     if(det == 0) throw NoInverseException(*this);
-
-    cout << det << endl;
-    cout << "det inv: " << 1/det << endl;
     
     return (1.0/det) * adjunct;
 }
@@ -275,7 +272,6 @@ Matrix4 operator* (const float scalar, Matrix4 mat){
     for(int i = 0; i < 4; i++){
         for(int j = 0; j < 4; j++){
             result.set(i, j, scalar * mat.get(i, j));
-            cout << "ASDASDF: " << i << " " << j << " " << mat.get(i, j) << "(1/" << scalar << ")" << endl;
         }
     }
     return result;

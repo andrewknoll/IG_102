@@ -101,8 +101,8 @@ Coordinates rotate(Coordinates& coord, const char axis, const float angle){
 
     return coord * mat;
 }
-
-Coordinates baseChange(Coordinates& coord, const Point o, const Direction u, const Direction v, const Direction w){
+template <class T>
+T baseChangeGeneric(T& coord, const Point o, const Direction u, const Direction v, const Direction w){
     Matrix4 mat;
     mat.setColumn(0, u.getVector());
     mat.setColumn(1, v.getVector());
@@ -110,4 +110,18 @@ Coordinates baseChange(Coordinates& coord, const Point o, const Direction u, con
     mat.setColumn(3, o.getVector());
 
     return coord * mat;
+}
+
+Point baseChange(Point& coord, const Point o, const Direction u, const Direction v, const Direction w){
+    Point result = baseChangeGeneric(coord, o, u, v, w);
+    return result;
+}
+
+Direction baseChange(Direction& coord, const Point o, const Direction u, const Direction v, const Direction w){
+    Direction result = baseChangeGeneric(coord, o, u, v, w);
+    return result;
+}
+
+Coordinates baseChange(Coordinates& coord, const Point o, const Direction u, const Direction v, const Direction w){
+    return baseChangeGeneric(coord, o, u, v, w);
 }

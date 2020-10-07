@@ -121,6 +121,6 @@ Coordinates Coordinates::operator* (Matrix4 m) const{
 
 ostream& operator<<(ostream& os, const Coordinates& coord)
 {
-    os << coord.getX() << ' ' << coord.getY() << ' ' << coord.getZ() << ' ' << coord.getW();
+    os << "(" << coord.getX() << ", " << coord.getY() << ", " << coord.getZ() << ", " << coord.getW() << ")";
     return os;
 }

@@ -7,6 +7,7 @@ class Point : public Coordinates{
 
     public:
         Point();
+        Point(Coordinates coord);
         Point(float x, float y, float z);
 };
 
