@@ -1,6 +1,30 @@
 #include "Image.hpp"
 
 
+string Image::getFormat(){
+    return format;
+}
+
+int Image::getWidth(){
+    return width;
+}
+
+int Image::getHeight(){
+    return height;
+}
+
+float Image::getMax(){
+    return max;
+}
+
+int Image::getColorRes(){
+    return colorRes;
+}
+
+RGB Image::getTuple(int i, int j){
+    return m[i][j];
+}
+
 float Image::parseComment(string s){
     float retVal = -1;
     int last = s.find_last_of("MAX=");

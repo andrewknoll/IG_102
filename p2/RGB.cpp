@@ -15,3 +15,19 @@ RGB::RGB(float red, float green, float blue){
 void RGB::toString(){
     cout << red << " " << green << " " << blue;
 }
+
+float RGB::get(int i){
+    float res = 0;
+    switch(i){
+        case 0:
+            res = red;
+            break;
+        case 1:
+            res = green;
+            break;
+        case 2:
+            res = blue;
+            break;
+    }
+    return res;
+}

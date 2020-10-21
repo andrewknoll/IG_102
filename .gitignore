@@ -2,6 +2,12 @@
 .vscode
 .ppm
 images/
+*.ppm
 
 # Include all executables here
 main
+clamp
+clampAndGamma
+equalize
+equalizeAndClamp
+gamma

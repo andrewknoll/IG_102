@@ -27,6 +27,14 @@ class Image{
         int memoryToDisk(float f);
 
     public:
+        string getFormat();
+        int getWidth();
+        int getHeight();
+        float getMax(); 
+        int getColorRes();
+
+        RGB getTuple(int i, int j);
+
         void read(string filename);
         void toString();
 
