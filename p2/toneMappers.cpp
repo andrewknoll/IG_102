@@ -1,6 +1,7 @@
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
+#include <iomanip>
 
 #include "Image.hpp"
 
@@ -79,6 +80,8 @@ float map(float max, float V, float g, float val){
     #ifdef CLAMPGAMMA
         return clampAndGamma(max, V, g, val);
     #endif
+    
+    return 0;
 }
 
 void generateOutput(Image& img, string output, float max, float V, float gamma){
@@ -86,12 +89,15 @@ void generateOutput(Image& img, string output, float max, float V, float gamma){
     ofstream fout(output);
 
     if(fout.is_open()){
-
+        cout << "Generating " << output << endl;
         int width = img.getWidth();
         int height = img.getHeight();
         float max = img.getMax();
 
+        float process = 0;
+
         fout << img.getFormat() << endl << MAX_COMMENT << max << endl << width << " " << height << endl << img.getColorRes() << endl;
+        cout << fixed << setprecision(2);
         for(int i = 0; i < width; i++){
             for(int j = 0; j < height; j++){
 
@@ -99,10 +105,17 @@ void generateOutput(Image& img, string output, float max, float V, float gamma){
                 float green = img.getTuple(i, j).get(1);
                 float blue = img.getTuple(i, j).get(2);
 
-                fout << map(max, V, gamma, red) << " " << map(max, V, gamma, green) << " " << map(max, V, gamma, blue);
-                fout << "    " << endl;
+                fout << img.memoryToDisk(map(max, V, gamma, red)) << " " << flush;
+                fout << img.memoryToDisk(map(max, V, gamma, green)) << " " << flush;
+                fout << img.memoryToDisk(map(max, V, gamma, blue)) << "     " << flush;
             }
+
+            cout << '\r ' << flush;
+            cout << 100.0 * (i*height) / (width*height) << "%";
+            
+            fout << endl;
         }
+        cout << '\r' << endl;
     }
     else{
         cerr << "Couldn't write on " << output << endl;
@@ -161,6 +174,7 @@ int main(int argc, char** argv){
         #endif
 
         generateOutput(img, output, max, V, gamma);
+        cout << "Finished!" << endl;
     }
     else{
         cerr << "Input or output arguments not specified" << endl;

@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -std=c++11
+CFLAGS=-Wall -std=c++11 -ggdb
 img=Image
 rgb=RGB
 main=toneMappers
@@ -27,27 +27,27 @@ $(cgamma): $(rgb).o $(img).o $(cgamma).o
 
 ##compile
 $(rgb).o: $(rgb).cpp
-	$(CC) $(rgb).cpp -c
+	$(CC) $(CFLAGS) $(rgb).cpp -c
 
 $(img).o: $(img).cpp
-	$(CC) $(img).cpp -c
+	$(CC) $(CFLAGS) $(img).cpp -c
 
 all: $(clamp) $(equ) $(equclamp) $(gamma) $(cgamma)
 
 $(clamp).o: $(main).cpp
-	$(CC) $(main).cpp -DCLAMP -c -o $(clamp).o
+	$(CC) $(CFLAGS) $(main).cpp -DCLAMP -c -o $(clamp).o
 
 $(equ).o: $(main).cpp
-	$(CC) $(main).cpp -DEQUALIZE -c -o $(equ).o
+	$(CC) $(CFLAGS) $(main).cpp -DEQUALIZE -c -o $(equ).o
 
 $(equclamp).o: $(main).cpp
-	$(CC) $(main).cpp -DEQUALIZECLAMP -c -o $(equclamp).o
+	$(CC) $(CFLAGS) $(main).cpp -DEQUALIZECLAMP -c -o $(equclamp).o
 
 $(gamma).o: $(main).cpp
-	$(CC) $(main).cpp -DGAMMA -c -o $(gamma).o
+	$(CC) $(CFLAGS) $(main).cpp -DGAMMA -c -o $(gamma).o
 
 $(cgamma).o: $(main).cpp
-	$(CC) $(main).cpp -DCLAMPGAMMA -c -o $(cgamma).o
+	$(CC) $(CFLAGS) $(main).cpp -DCLAMPGAMMA -c -o $(cgamma).o
 
 
 ##clear

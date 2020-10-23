@@ -20,13 +20,14 @@ class Image{
         float max = 1.0; 
         int colorRes;
 
-        vector<vector<RGB>> m;
+        vector<vector<RGB> > m;
 
         float parseComment(string s);
         float diskToMemory(int i);
-        int memoryToDisk(float f);
+        
 
     public:
+        int memoryToDisk(float f);
         string getFormat();
         int getWidth();
         int getHeight();

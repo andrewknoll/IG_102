@@ -54,6 +54,7 @@ void Image::read(string filename){
     bool colorRead = false;
 
     if(f.is_open()){
+        cout << "Reading image..." << endl;
         getline(f, format);
         while(!f.eof() && (!whRead || !colorRead)){
             getline(f, buffer);
@@ -73,6 +74,8 @@ void Image::read(string filename){
                         m[i].resize(height);
                     }
                     whRead = true;
+
+
                 }
                 else{
                     stream >> colorRes;
@@ -81,12 +84,12 @@ void Image::read(string filename){
             }
         }
         //no more comments can be found in the document (starts to read RGB tuples)
-        while(!f.eof()){
-            for(int i = 0; i < width; i++){
-                for(int j = 0; j < height; j++){
+        if(!f.eof()){
+            for(int i = 0; i < width && !f.eof(); i++){
+                for(int j = 0; j < height && !f.eof(); j++){
                     int rgb[3];
                     float rgbReal[3];
-                    for(int k = 0; k < 3; k++){
+                    for(int k = 0; k < 3 && !f.eof(); k++){
                         f >> rgb[k];
                         rgbReal[k] = diskToMemory(rgb[k]);
                     }
