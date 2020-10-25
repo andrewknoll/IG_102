@@ -8,6 +8,9 @@
 #include <string>
 #include <cmath>
 #include <vector>
+#include <memory>
+
+#define LDR_RES 255
 
 #include "RGB.hpp"
 
@@ -20,21 +23,32 @@ class Image{
         float max = 1.0; 
         int colorRes;
 
+        float maxFound = 0.0;
+        float maxAfterMapping = 0.0;
+
         vector<vector<RGB> > m;
 
         float parseComment(string s);
         float diskToMemory(int i);
-        
 
     public:
+
         int memoryToDisk(float f);
         string getFormat();
         int getWidth();
         int getHeight();
-        float getMax(); 
+        float getMax();
+
+        void setMaxFound(float n);
+        float getMaxFound();
+
         int getColorRes();
 
+        void setMaxAfterMapping(float n);
+        float getMaxAfterMapping();
+
         RGB getTuple(int i, int j);
+        void setTuple(RGB color, int i, int j);
 
         void read(string filename);
         void toString();

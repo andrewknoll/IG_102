@@ -15,6 +15,7 @@ class RGB{
         RGB(float red, float green, float blue);
         void toString();
         float get(int i);
+        void set(float c, int i);
 };
 
 #endif

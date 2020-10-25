@@ -1,6 +1,5 @@
 #include "Image.hpp"
 
-
 string Image::getFormat(){
     return format;
 }
@@ -17,12 +16,32 @@ float Image::getMax(){
     return max;
 }
 
+void Image::setMaxFound(float n){
+    maxFound = n;
+}
+
+float Image::getMaxFound(){
+    return maxFound;
+}
+
+void Image::setMaxAfterMapping(float n){
+    maxAfterMapping = n;
+}
+
+float Image::getMaxAfterMapping(){
+    return maxAfterMapping;
+}
+
 int Image::getColorRes(){
     return colorRes;
 }
 
 RGB Image::getTuple(int i, int j){
     return m[i][j];
+}
+
+void Image::setTuple(RGB color, int i, int j){
+    m[i][j] = color;
 }
 
 float Image::parseComment(string s){
@@ -41,7 +60,8 @@ float Image::diskToMemory(int i){
 }
 
 int Image::memoryToDisk(float f){
-    return round(f * colorRes/max);
+    int aux = round(f * LDR_RES/maxAfterMapping);
+    return aux;
 }
 
 void Image::read(string filename){
@@ -92,6 +112,9 @@ void Image::read(string filename){
                     for(int k = 0; k < 3 && !f.eof(); k++){
                         f >> rgb[k];
                         rgbReal[k] = diskToMemory(rgb[k]);
+                        if(rgbReal[k] > maxFound){
+                            maxFound = rgbReal[k];
+                        }
                     }
                     RGB pixel(rgbReal[0], rgbReal[1], rgbReal[2]);
                     m[i][j] = pixel;

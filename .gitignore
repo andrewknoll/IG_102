@@ -7,7 +7,7 @@ images/
 # Include all executables here
 main
 clamp
-clampAndGamma
+GammaAndClamp
 equalize
 equalizeAndClamp
 gamma

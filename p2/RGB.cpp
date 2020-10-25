@@ -31,3 +31,17 @@ float RGB::get(int i){
     }
     return res;
 }
+
+void RGB::set(float c, int i){
+    switch(i){
+        case 0:
+            red = c;
+            break;
+        case 1:
+            green = c;
+            break;
+        case 2:
+            blue = c;
+            break;
+    }
+}
