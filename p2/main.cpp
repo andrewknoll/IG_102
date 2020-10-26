@@ -38,44 +38,6 @@ using namespace std;
 
 typedef unsigned char byte;
 
-//tuneMapping
-//returns max value
-/*float map(Image& img, float max, float V, float g, float val){
-    float color[3], maxImage = 0.0;
-    for(int i = 0; i < img.getWidth(); i++){
-            for(int j = 0; j < img.getHeight(); j++){
-                for(int k = 0; k < 3; k++){
-                    color[k] = img.getTuple(i, j).get(k);
-                #ifdef CLAMP
-                    color[k] = clamp(color[k]);
-                #endif
-
-                #ifdef EQUALIZE
-                    color[k] = equalize(max, color[k]);
-                #endif
-
-                #ifdef EQUALIZECLAMP
-                    color[k] = equalizeAndClamp(max, V, color[k]);
-                #endif
-
-                #ifdef GAMMA
-                    color[k] = gamma(max, g, color[k]);
-                #endif
-
-                #ifdef CLAMPGAMMA
-                    color[k] = clampAndGamma(max, V, g, color[k]);
-                #endif
-
-                if(color[k] > maxImage){
-                    maxImage = color[k];
-                }
-            }
-        }
-    }
-    return maxImage;
-}
-*/
-
 //Writes size bytes of obj into fout
 template <typename T>
 void binWrite(ofstream& fout, T obj, int size = -1){
