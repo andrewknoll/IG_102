@@ -6,8 +6,8 @@ GammaAndClamp::GammaAndClamp(float g, float V){
 }
 
 void GammaAndClamp::preprocess(Image& img){
-    EqualizeAndClamp equClamp(V);
-    equClamp.apply(img);
+    Clamp clamp(V);
+    clamp.apply(img);
 
     float maxAfterClamping = img.getMaxAfterMapping();
 

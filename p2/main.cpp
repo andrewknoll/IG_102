@@ -31,8 +31,12 @@
 
 #define BMP_HEADER_SIZE 14
 #define BMP_INFO_SIZE 40
+//(256 possible intensities for each RGB component)
+#define BMP_BITS_PER_PIXEL 24
 
 using namespace std;
+
+typedef unsigned char byte;
 
 //tuneMapping
 //returns max value
@@ -71,14 +75,23 @@ using namespace std;
     return maxImage;
 }
 */
+
+//Writes size bytes of obj into fout
 template <typename T>
-void binWrite(ofstream& fout, T obj, const int size = sizeof(T)){
-    fout.write(reinterpret_cast<char*>(obj), size);
+void binWrite(ofstream& fout, T obj, int size = -1){
+    if(size == -1) size = sizeof(obj);
+    fout.write(reinterpret_cast<const char*>(&obj), size);
+}
+
+//Pointer Overload
+template <typename T>
+void binWrite(ofstream& fout, T* obj, int size = -1){
+    if(size == -1) size = sizeof(*obj);
+    fout.write(reinterpret_cast<const char*>(obj), size);
 }
 
 
-//HACER EL TONE MAPPER EN MEMORIA (APLICAR A LA MATRIZ DIRECTAMENTE Y LUEGO ESCRIBIR)
-void generateOutput(Image& img, string output){
+void generatePPM(Image& img, string output){
 
     ofstream fout(output);
 
@@ -96,8 +109,8 @@ void generateOutput(Image& img, string output){
 
         fout << img.getFormat() << endl << MAX_COMMENT << max << endl << width << " " << height << endl << LDR_RES << endl;
         cout << fixed << setprecision(2);
-        for(int i = 0; i < width; i++){
-            for(int j = 0; j < height; j++){
+        for(int i = 0; i < height; i++){
+            for(int j = 0; j < width; j++){
                 red = img.getTuple(i, j).get(0);
                 green = img.getTuple(i, j).get(1);
                 blue = img.getTuple(i, j).get(2);
@@ -108,7 +121,7 @@ void generateOutput(Image& img, string output){
             }
 
             cout << "\r " << flush;
-            cout << 100.0 * (i*height) / (width*height) << "%";
+            cout << 100.0 * (i*width) / (width*height) << "%";
             
             fout << endl;
         }
@@ -121,7 +134,7 @@ void generateOutput(Image& img, string output){
     fout.close();
 }
 
-/*void generateBMP(Image& img, string output, float max, float V, float gamma){
+void generateBMP(Image& img, string output){
 
     ofstream fout(output, ios::binary);
 
@@ -130,53 +143,54 @@ void generateOutput(Image& img, string output){
         int width = img.getWidth();
         int height = img.getHeight();
         float max = img.getMax();
+        //FILE HEADER
+        binWrite(fout, "BM", 2);    //Signature
+        binWrite(fout, BMP_HEADER_SIZE + BMP_INFO_SIZE + width*height*3 + width*3 % 4 * height);   //FileSize (HEADER + INFO + PIXELS + PADDINGS)
+        binWrite(fout, 0); //Reserved
+        binWrite(fout, BMP_HEADER_SIZE + BMP_INFO_SIZE);    //DataOffset
 
-        binWrite(fout, "BM", 2);
-        binWrite(fout, BMP_HEADER_SIZE + BMP_INFO_SIZE + width*height*4);
-        binWrite(fout, (int)0);
-        binWrite(fout, BMP_HEADER_SIZE + BMP_INFO_SIZE);
+        //INFO HEADER
+        binWrite(fout, BMP_INFO_SIZE);  //Size (of Info Header)
+        binWrite(fout, width);  //Width
+        binWrite(fout, height); //Height
+        binWrite(fout, (short)1); //Number of planes
+        binWrite(fout, (short)BMP_BITS_PER_PIXEL);  //Bits per pixel 
+        binWrite(fout, 0); //Compression
+        binWrite(fout, 0); //ImageSize (if not compressed can be set to 0)
+        binWrite(fout, 0); //XpixelsPerM (can be set to 0 if no preference)
+        binWrite(fout, 0); //YpixelsPerM (can be set to 0 if no preference)
+        binWrite(fout, 1 << BMP_BITS_PER_PIXEL);  //Color resolution (2^bits_per_pixel)
+        binWrite(fout, 0); //Important colors (0 = all)
 
-        binWrite(fout, BMP_INFO_SIZE);
-        binWrite(fout, width);
-        binWrite(fout, (int)1);
-        binWrite(fout, ceil(log2(img.getColorRes())));
-        binWrite(fout, (int)0);
-        binWrite(fout, (int)0);
-        binWrite(fout, (int)0);
-        binWrite(fout, (int)0);
-        binWrite(fout, img.getColorRes());
-        binWrite(fout, (int)0);
+        //COLOR TABLE NOT NECESSARY FOR IMAGES OF MORE THAN 8 COLORS
 
-        for(int i = 0; i < img.getColorRes(); i++){
-            binWrite(fout, );
-            binWrite(fout, (int)0);
-            binWrite(fout, (int)0);
-            binWrite(fout, (int)0);
-        }
+        cout << fixed << setprecision(2);
+        float red, green, blue;
+        byte redByte, greenByte, blueByte;
+        //PIXEL DATA (stored bottom to top)
+        for(int i = height - 1; i >= 0; i--){
+            for(int j = 0; j < width; j++){
+                red = img.getTuple(i, j).get(0);
+                green = img.getTuple(i, j).get(1);
+                blue = img.getTuple(i, j).get(2);
+                
+                redByte = img.memoryToDisk(red);
+                greenByte = img.memoryToDisk(green);
+                blueByte = img.memoryToDisk(blue);
 
-        for(int i = 0; i < width; i++){
-            for(int j = 0; j < height; j++){
-
-                float red = img.getTuple(i, j).get(0);
-                float green = img.getTuple(i, j).get(1);
-                float blue = img.getTuple(i, j).get(2);
-
-                binWrite(fout, img.memoryToDisk(map(max, V, gamma, red)));
-                binWrite(fout, (int)0);
-                binWrite(fout, (int)0);
-                binWrite(fout, (int)0);
-
-                fout << img.memoryToDisk(map(max, V, gamma, red)) << " " << flush;
-                fout << img.memoryToDisk(map(max, V, gamma, green)) << " " << flush;
-                fout << img.memoryToDisk(map(max, V, gamma, blue)) << "     " << flush;
+                binWrite(fout, blueByte);   //blue
+                binWrite(fout, greenByte);  //green
+                binWrite(fout, redByte);    //red
             }
-
-            cout << "\r " << flush;
-            cout << 100.0 * (i*height) / (width*height) << "%";
+            for(int p = 0; p < (width*3) % 4; p++){ //each row of pixels must start in a 4-aligned value...
+            //...so we add padding each time the row doesn't end in a multiple of 4
+                binWrite(fout, (byte)0);
+            }
             
-            fout << endl;
+            cout << "\r " << flush;
+            cout << 100.0 * ((height-i)*width) / (width*height) << "%";
         }
-        cout << '\r' << endl;
+        cout << "\r 100.00%" << endl;
     }
     else{
         cerr << "Couldn't write on " << output << endl;
@@ -184,7 +198,8 @@ void generateOutput(Image& img, string output){
 
     fout.close();
 }
-*/
+
+
 int main(int argc, char** argv){
 
     string input, output;
@@ -245,12 +260,12 @@ int main(int argc, char** argv){
 
         tm->apply(img);
 
-        /*if(strcmp(argv[argc-1], "-bmp")==0){
-            generateBMP();
+        if(strcmp(argv[argc-1], "-bmp")==0){
+            generateBMP(img, output);
         }
-        else{*/
-            generateOutput(img, output);
-        //}
+        else{
+            generatePPM(img, output);
+        }
 
         
         cout << "Finished!" << endl;

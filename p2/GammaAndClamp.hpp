@@ -5,7 +5,7 @@
 
 #include "ToneMapper.hpp"
 #include "Gamma.hpp"
-#include "EqualizeAndClamp.hpp"
+#include "Clamp.hpp"
 
 class GammaAndClamp: public ToneMapper{
 
