@@ -1,19 +1,17 @@
-#ifndef EQUALIZECLAMPHPP
-#define EQUALIZECLAMPHPP
+#ifndef __EQUALIZECLAMP__
+#define __EQUALIZECLAMP__
 
 #include "ToneMapper.hpp"
-#include "Clamp.hpp"
-#include "Equalize.hpp"
 
+//Equalize() = EqualizeAndClamp(img.getMaxFound())
 class EqualizeAndClamp: public ToneMapper{
 
     private:
         float V = 1.0;
 
     public:
-        EqualizeAndClamp(float frontier);
-        void preprocess(Image& img);
-        void process(Image& img);
+        EqualizeAndClamp(float V);
+        float mapValue(float f);
 
 };
 

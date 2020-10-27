@@ -1,5 +1,5 @@
-#ifndef IMAGE
-#define IMAGE
+#ifndef __IMAGE__
+#define __IMAGE__
 
 #include <iostream>
 #include <stdio.h>
@@ -13,6 +13,7 @@
 #define LDR_RES 255
 
 #include "RGB.hpp"
+#include "ToneMapper.hpp"
 
 using namespace std;
 
@@ -31,6 +32,8 @@ class Image{
         float parseComment(string s);
         float diskToMemory(int i);
 
+        shared_ptr<ToneMapper> tm;
+
     public:
 
         int memoryToDisk(float f);
@@ -46,6 +49,9 @@ class Image{
 
         void setMaxAfterMapping(float n);
         float getMaxAfterMapping();
+
+        void setToneMapper(shared_ptr<ToneMapper> tm);
+        void applyToneMapper();
 
         RGB getTuple(int i, int j);
         void setTuple(RGB color, int i, int j);

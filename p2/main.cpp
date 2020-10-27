@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <iomanip>
 #include <string.h>
+#include <memory>
 
 #include "Image.hpp"
 #include "ToneMapper.hpp"
@@ -10,16 +11,12 @@
 #ifdef CLAMP
     #include "Clamp.hpp"
 #endif
-#ifdef EQUALIZE
-    #include "Equalize.hpp"
-#endif
-#ifdef EQUALIZECLAMP
+
+#if defined(EQUALIZE) || defined(EQUALIZECLAMP)
     #include "EqualizeAndClamp.hpp"
 #endif
-#ifdef GAMMA
-    #include "Gamma.hpp"
-#endif
-#ifdef CLAMPGAMMA
+
+#if defined(GAMMA) || defined(CLAMPGAMMA)
     #include "GammaAndClamp.hpp"
 #endif
 
@@ -63,8 +60,6 @@ void generatePPM(Image& img, string output){
         int height = img.getHeight();
         float max = img.getMax();
 
-        float maxImage = img.getMaxAfterMapping();
-
         float red;
         float green;
         float blue;
@@ -104,7 +99,7 @@ void generateBMP(Image& img, string output){
         cout << "Generating " << output << endl;
         int width = img.getWidth();
         int height = img.getHeight();
-        float max = img.getMax();
+
         //FILE HEADER
         binWrite(fout, "BM", 2);    //Signature
         binWrite(fout, BMP_HEADER_SIZE + BMP_INFO_SIZE + width*height*3 + width*3 % 4 * height);   //FileSize (HEADER + INFO + PIXELS + PADDINGS)
@@ -170,21 +165,22 @@ int main(int argc, char** argv){
         input = argv[1];
         output = argv[2];
 
-        float max = -1, gamma = -1, V = -1;
-
         shared_ptr<ToneMapper> tm;
-        
+
+        Image img;
+        img.read(input);
+
         #ifdef CLAMP
             tm = make_shared<Clamp>();
         #endif
 
         #ifdef EQUALIZE
-            tm = make_shared<Equalize>();
+            tm = make_shared<EqualizeAndClamp>(img.getMaxFound());
         #endif
 
         #ifdef EQUALIZECLAMP
             if(argc >= 4){
-                V = atof(argv[3]);
+                float V = atof(argv[3]);
                 tm = make_shared<EqualizeAndClamp>(V);
             }
             else{
@@ -195,8 +191,8 @@ int main(int argc, char** argv){
 
         #ifdef GAMMA
             if(argc >= 4){
-                gamma = atof(argv[3]);
-                tm = make_shared<Gamma>(gamma);
+                float gamma = atof(argv[3]);
+                tm = make_shared<GammaAndClamp>(gamma, img.getMaxFound());
             }
             else{
                 cerr << "GAMMA argument not specified" << endl;
@@ -206,10 +202,9 @@ int main(int argc, char** argv){
 
         #ifdef CLAMPGAMMA
             if(argc >= 5){
-                V = atof(argv[3]);
-                gamma = atof(argv[4]);
-                tm = make_shared<GammaAndClamp>(gamma, V);
-                
+                float V = atof(argv[3]);
+                float gamma = atof(argv[4]);
+                tm = make_shared<GammaAndClamp>(gamma, V);  
             }
             else{
                 cerr << "Insuficient arguments (need V and gamma)" << endl;
@@ -217,10 +212,9 @@ int main(int argc, char** argv){
             }
         #endif
 
-        Image img;
-        img.read(input);
-
-        tm->apply(img);
+        img.setToneMapper(tm);
+        cout << "Mapping..." << endl;
+        img.applyToneMapper();
 
         if(strcmp(argv[argc-1], "-bmp")==0){
             generateBMP(img, output);

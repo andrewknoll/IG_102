@@ -1,18 +1,10 @@
-#ifndef TONEMAPPER
-#define TONEMAPPER
-
-#include "Image.hpp"
-#include "RGB.hpp"
+#ifndef __TONEMAPPER__
+#define __TONEMAPPER__
 
 class ToneMapper{
 
     public:
-        virtual void preprocess(Image& img){}
-        virtual void process(Image& img) = 0;
-        void apply(Image& img){
-            preprocess(img);
-            process(img);
-        }
+        virtual float mapValue(float f) = 0;
 
 };
 

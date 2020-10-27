@@ -19,17 +19,17 @@ toneMap=ToneMapper
 $(clamp): $(rgb).o $(img).o $(clamp).o $(mainClamp).o
 	$(CC) $(CFLAGS) $(rgb).o $(img).o $(clamp).o $(mainClamp).o -o $(clamp)
 
-$(equ): $(rgb).o $(img).o $(equ).o $(mainEqu).o
-	$(CC) $(CFLAGS) $(rgb).o $(img).o $(equ).o $(mainEqu).o -o $(equ)
+$(equ): $(rgb).o $(img).o $(equclamp).o $(mainEqu).o
+	$(CC) $(CFLAGS) $(rgb).o $(img).o $(equclamp).o $(mainEqu).o -o $(equ)
 
-$(equclamp): $(rgb).o $(img).o $(equclamp).o $(equ).o $(clamp).o $(mainEquC).o
-	$(CC) $(CFLAGS) $(rgb).o $(img).o $(equclamp).o $(equ).o $(clamp).o $(mainEquC).o -o $(equclamp)
+$(equclamp): $(rgb).o $(img).o $(equclamp).o $(mainEquC).o
+	$(CC) $(CFLAGS) $(rgb).o $(img).o $(equclamp).o $(mainEquC).o -o $(equclamp)
 
-$(gamma): $(rgb).o $(img).o $(gamma).o $(mainGam).o
-	$(CC) $(CFLAGS) $(rgb).o $(img).o $(gamma).o $(mainGam).o -o $(gamma)
+$(gamma): $(rgb).o $(img).o $(cgamma).o $(mainGam).o
+	$(CC) $(CFLAGS) $(rgb).o $(img).o $(cgamma).o $(mainGam).o -o $(gamma)
 
-$(cgamma): $(rgb).o $(img).o $(cgamma).o $(equclamp).o $(equ).o $(clamp).o $(gamma).o $(mainGamC).o
-	$(CC) $(CFLAGS) $(rgb).o $(img).o $(cgamma).o $(equclamp).o $(equ).o $(clamp).o $(gamma).o $(mainGamC).o -o $(cgamma)
+$(cgamma): $(rgb).o $(img).o $(cgamma).o $(mainGamC).o
+	$(CC) $(CFLAGS) $(rgb).o $(img).o $(cgamma).o $(mainGamC).o -o $(cgamma)
 
 ##compile
 $(rgb).o: $(rgb).cpp $(rgb).hpp
@@ -56,19 +56,13 @@ $(mainGamC).o: $(main).cpp
 	$(CC) $(CFLAGS) $(main).cpp -DCLAMPGAMMA -c -o $(mainGamC).o
 
 $(clamp).o: $(clamp).cpp $(clamp).hpp $(toneMap).hpp
-	$(CC) $(CFLAGS) $(clamp).cpp -DCLAMP -c -o $(clamp).o
-
-$(equ).o: $(equ).cpp $(equ).hpp $(toneMap).hpp
-	$(CC) $(CFLAGS) $(equ).cpp -DEQUALIZE -c -o $(equ).o
+	$(CC) $(CFLAGS) $(clamp).cpp -c -o $(clamp).o
 
 $(equclamp).o: $(equclamp).cpp $(equclamp).hpp $(toneMap).hpp
-	$(CC) $(CFLAGS) $(equclamp).cpp -DEQUALIZECLAMP -c -o $(equclamp).o
-
-$(gamma).o: $(gamma).cpp $(gamma).hpp $(toneMap).hpp
-	$(CC) $(CFLAGS) $(gamma).cpp -DGAMMA -c -o $(gamma).o
+	$(CC) $(CFLAGS) $(equclamp).cpp -c -o $(equclamp).o
 
 $(cgamma).o: $(cgamma).cpp $(cgamma).hpp $(toneMap).hpp
-	$(CC) $(CFLAGS) $(cgamma).cpp -DCLAMPGAMMA -c -o $(cgamma).o
+	$(CC) $(CFLAGS) $(cgamma).cpp -c -o $(cgamma).o
 
 
 ##clear

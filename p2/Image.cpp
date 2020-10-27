@@ -128,6 +128,33 @@ void Image::read(string filename){
     }
 }
 
+void Image::setToneMapper(shared_ptr<ToneMapper> tm){
+    this->tm = tm;
+}
+
+void Image::applyToneMapper(){
+    if(tm != nullptr){
+        maxAfterMapping = 0.0;
+        RGB tuple;
+        float color;
+        for(int i = 0; i < height; i++){
+            for(int j = 0; j < width; j++){
+                tuple = m[i][j];
+                for(int k = 0; k < 3; k++){
+
+                    color = tm->mapValue(tuple.get(k));
+                    tuple.set(tm->mapValue(color), k);
+                    
+                    if(color > maxAfterMapping){
+                        maxAfterMapping = color;
+                    }
+                }
+                m[i][j] = tuple;
+            }
+        }
+    }
+}
+
 void Image::toString(){
     cout << format << endl << max << endl << width << endl << height << endl << colorRes << endl;
     for(int i = 0; i < height; i++){
