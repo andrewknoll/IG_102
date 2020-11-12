@@ -1,6 +1,5 @@
 #include "Image.hpp"
 
-
 string Image::getFormat(){
     return format;
 }
@@ -17,12 +16,32 @@ float Image::getMax(){
     return max;
 }
 
+void Image::setMaxFound(float n){
+    maxFound = n;
+}
+
+float Image::getMaxFound(){
+    return maxFound;
+}
+
+void Image::setMaxAfterMapping(float n){
+    maxAfterMapping = n;
+}
+
+float Image::getMaxAfterMapping(){
+    return maxAfterMapping;
+}
+
 int Image::getColorRes(){
     return colorRes;
 }
 
 RGB Image::getTuple(int i, int j){
     return m[i][j];
+}
+
+void Image::setTuple(RGB color, int i, int j){
+    m[i][j] = color;
 }
 
 float Image::parseComment(string s){
@@ -41,7 +60,8 @@ float Image::diskToMemory(int i){
 }
 
 int Image::memoryToDisk(float f){
-    return round(f * colorRes/max);
+    int aux = round(f * LDR_RES/maxAfterMapping);
+    return aux;
 }
 
 void Image::read(string filename){
@@ -69,9 +89,9 @@ void Image::read(string filename){
                 istringstream stream(buffer);
                 if(!whRead){
                     stream >> width >> height;
-                    m.resize(width);
-                    for(int i = 0; i < width; i++){
-                        m[i].resize(height);
+                    m.resize(height);
+                    for(int i = 0; i < height; i++){
+                        m[i].resize(width);
                     }
                     whRead = true;
 
@@ -85,13 +105,16 @@ void Image::read(string filename){
         }
         //no more comments can be found in the document (starts to read RGB tuples)
         if(!f.eof()){
-            for(int i = 0; i < width && !f.eof(); i++){
-                for(int j = 0; j < height && !f.eof(); j++){
+            for(int i = 0; i < height && !f.eof(); i++){
+                for(int j = 0; j < width && !f.eof(); j++){
                     int rgb[3];
                     float rgbReal[3];
                     for(int k = 0; k < 3 && !f.eof(); k++){
                         f >> rgb[k];
                         rgbReal[k] = diskToMemory(rgb[k]);
+                        if(rgbReal[k] > maxFound){
+                            maxFound = rgbReal[k];
+                        }
                     }
                     RGB pixel(rgbReal[0], rgbReal[1], rgbReal[2]);
                     m[i][j] = pixel;
@@ -105,10 +128,37 @@ void Image::read(string filename){
     }
 }
 
+void Image::setToneMapper(shared_ptr<ToneMapper> tm){
+    this->tm = tm;
+}
+
+void Image::applyToneMapper(){
+    if(tm != nullptr){
+        maxAfterMapping = 0.0;
+        RGB tuple;
+        float color;
+        for(int i = 0; i < height; i++){
+            for(int j = 0; j < width; j++){
+                tuple = m[i][j];
+                for(int k = 0; k < 3; k++){
+
+                    color = tm->mapValue(tuple.get(k));
+                    tuple.set(tm->mapValue(color), k);
+                    
+                    if(color > maxAfterMapping){
+                        maxAfterMapping = color;
+                    }
+                }
+                m[i][j] = tuple;
+            }
+        }
+    }
+}
+
 void Image::toString(){
     cout << format << endl << max << endl << width << endl << height << endl << colorRes << endl;
-    for(int i = 0; i < width; i++){
-        for(int j = 0; j < height; j++){
+    for(int i = 0; i < height; i++){
+        for(int j = 0; j < width; j++){
             m[i][j].toString();
             cout << "    " << endl;
         }

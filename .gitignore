@@ -3,11 +3,12 @@
 .ppm
 images/
 *.ppm
+*.bmp
 
 # Include all executables here
 main
-clamp
-clampAndGamma
-equalize
-equalizeAndClamp
-gamma
+Clamp
+GammaAndClamp
+Equalize
+EqualizeAndClamp
+Gamma
