@@ -1,34 +1,38 @@
 #include "Camera.hpp"
 
-    Camera(){
-        up = new Direction();
-        left =  new Direction();
-        front = new Direction();
-        origin = new Point();
+    Camera::Camera(){
+        up = new Direction(1,0,0);
+        left =  new Direction(0,1,0);
+        front = new Direction(0,0,8);
+        origin = new Point(0,0,0);
         width = 0;
         heigth = 0;
         raysPP = 0;
     } 
     
-    Camera(Scene scene){
+    Camera::Camera(Scene scene){
         // Ni putis idea
+        int sceneHeigth = scene.getHeigth();
+        Point sceneCenter = scene.getCenter();
+        // Posicionar el centro de la camara a 4(alturas de escena) del centro de la escena
+        //¿EN QUE ANGULO? XD
     }
 
-    void setOrigin(Point p){
+    void Camera::setOrigin(Point* p){
         origin = p;
     }
-    void setResolution(int h, int w){
+    void Camera::setResolution(int h, int w){
         heigth = h;
         width = w;
     }
-    void setCoord(Direction u, Direction l, Direction f){
+    void Camera::setCoord(Direction *u, Direction *l, Direction *f){
         up = u;
         left = l;
         front = f;
     }
-    void setRaysPP(int r){
+    void Camera::setRaysPP(int r){
         raysPP = r;
     }
-    Imagen rayTracing(){
+    void Camera::rayTracing(){
         // JA JA JA
     }

@@ -1,17 +1,13 @@
-#ifndef __CAMERA__
-#define __CAMERA__
-
-#include ...
+#include "Scene.hpp"
 #include "Direction.hpp"
 #include "Point.hpp"
-
 
 using namespace std;
 
 class Camera{
     private:
-        Direction up, left, front; // Local camera coordinate system
-        Point origin; // Origin point
+        Direction* up, *left, *front; // Local camera coordinate system
+        Point* origin; // Origin point
         int heigth, width; // Final image resolution
         int raysPP; // number of rays per pixel in ray tracing
     public:
@@ -21,9 +17,9 @@ class Camera{
         // module up = scene heigth
         // module left = front x up
         Camera(Scene scene); 
-        void setOrigin(Point p);
+        void setOrigin(Point *p);
         void setResolution(int h, int w);
-        void setCoord(Direction u, Direction l, Direction f);
+        void setCoord(Direction *u, Direction *l, Direction *f);
         void setRaysPP(int r);
-        Imagen rayTracing();
-}
+        void rayTracing();
+};
