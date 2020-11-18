@@ -1,7 +1,8 @@
 #include "Shape.hpp"
-#include "Coordinates.hpp"
-#include "Direction.hpp"
-#include "Point.hpp"
+#include "vfield/Coordinates.hpp"
+#include "vfield/Operations.hpp"
+#include "vfield/Direction.hpp"
+#include "vfield/Point.hpp"
 
 class Plane : public Shape{
     protected:
@@ -10,6 +11,7 @@ class Plane : public Shape{
 
     public:
         Plane(Direction normal, int distance, RGB emission);
-        void setAll(float coord[6], int distance, float emission[3]);
+        void setAll(float coord[3], int distance, float emission[3]);
+        PossibleSolution<Point> findFirstIntersectionWithLine(Direction d, Point o);
     
 };
