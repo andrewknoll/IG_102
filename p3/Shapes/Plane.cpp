@@ -1,5 +1,6 @@
 #include "Plane.hpp"
 
+
 Plane::Plane(Direction normal, int distance, RGB emission){
     this->normal=normal;
     this->distanceToOrigin=distance;
@@ -15,9 +16,7 @@ void Plane::setAll(float coord[3], int distance, float emission[3]){
     this->emission.set(emission[2], 2);
 }
 
-PossibleSolution<Point> Plane::findFirstIntersectionWithLine(Direction d, Point o){
-    PossibleSolution<Point> result;
+void Plane::findFirstIntersectionWithLine(Direction d, Point o, struct PossibleSolution<Point> result[]){
     float t = -(distanceToOrigin + (o * normal))/(d * normal);
-    result.setSolution((d * t) + o);
-    return result;
+    result[0].setSolution((d * t) + o);
 }

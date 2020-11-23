@@ -1,4 +1,8 @@
+#ifndef __CAMERA__
+#define __CAMERA__
+
 #include "vfield/Direction.hpp"
+#include "vfield/Coordinates.hpp"
 #include "vfield/Operations.hpp"
 #include "vfield/Point.hpp"
 #include <math.h>
@@ -26,4 +30,9 @@ class Camera{
         Direction getLeft();
         Direction getFront();
         Point getOrigin();
+        
+        Point changeToGlobalCoordinates(Point p);
+        Direction changeToGlobalCoordinates(Direction d);
 };
+
+#endif

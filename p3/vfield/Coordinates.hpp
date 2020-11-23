@@ -1,5 +1,5 @@
-#ifndef COORDINATES
-#define COORDINATES
+#ifndef __COORDINATES__
+#define __COORDINATES__
 
 #include <iostream>
 #include <cassert>

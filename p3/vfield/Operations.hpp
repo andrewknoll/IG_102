@@ -1,9 +1,10 @@
 #include "Point.hpp"
 #include "Direction.hpp"
 #include <math.h>
+#include "PossibleSolution.hpp"
 
-#ifndef OPERATIONS
-#define OPERATIONS
+#ifndef __OPERATIONS__
+#define __OPERATIONS__
 
 // Point + Direction
 Point operator+(const Point p, const Direction d);
@@ -50,19 +51,7 @@ Point baseChange(Point& coord, const Point o, const Direction u, const Direction
 Direction baseChange(Direction& coord, const Point o, const Direction u, const Direction v, const Direction w);
 Coordinates baseChange(Coordinates& coord, const Point o, const Direction u, const Direction v, const Direction w);
 
-template <typename T>
-struct PossibleSolution{
-    private:
-        bool exists = false;
-        T solution;
-
-    public:
-        void setSolution(T s);
-        T getSolution();
-        bool doesExist();
-};
-
-void solveQuadraticEquation(double a, double b, double c, PossibleSolution<double> results[2]);
-
+void solveQuadraticEquation(double a, double b, double c, struct PossibleSolution<double> results[2]);
+float distance(Point a, Point b);
 
 #endif

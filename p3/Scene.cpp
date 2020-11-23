@@ -31,17 +31,17 @@ void Scene::setCamera(Camera camera){
     this->camera = camera;
 }
 
-void Scene::addShape(Shape s){
-    list.push_back(s);
+void Scene::addShape(shared_ptr<Shape> s){
+    objects.emplace_back(s);
 }
 
 
-void Scene::buildCameraFromHFOV(int HFOV, Point target){
+void Scene::buildCameraFromHFOV(float HFOV, Point target){
     Camera c(width, height, target, HFOV, true);
     camera = c;
 }
 
-void Scene::buildCameraFromVFOV(int VFOV, Point target){
+void Scene::buildCameraFromVFOV(float VFOV, Point target){
     Camera c(width, height, target, VFOV, false);
     camera = c;
 }
@@ -54,22 +54,12 @@ Camera Scene::getCamera(){
     return camera;
 }
 
-Shape Scene::first(){
-    si = list.begin();
-    return *si;
-}
-
-bool Scene::hasNext(){
-    return si != list.end();
-}
-
-Shape Scene::next(){
-    if(hasNext()) si++;
-    return *si;
+shared_ptr<Shape> Scene::getShape(int i){
+    return static_pointer_cast<Shape>(objects[i]);
 }
 
 int Scene::length(){
-    return list.size();
+    return objects.size();
 }
 
 ////////////////////////////////////////////////

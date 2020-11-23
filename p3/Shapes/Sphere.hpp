@@ -1,8 +1,12 @@
+#ifndef __SPHERE__
+#define __SPHERE__
+
 #include "Shape.hpp"
-#include "vfield/Coordinates.hpp"
-#include "vfield/Direction.hpp"
-#include "vfield/Point.hpp"
-#include "vfield/Operations.hpp"
+#include "../vfield/Coordinates.hpp"
+#include "../vfield/Direction.hpp"
+#include "../vfield/Point.hpp"
+#include "../vfield/Operations.hpp"
+#include "../vfield/PossibleSolution.hpp"
 
 class Sphere : public Shape{
     protected:
@@ -12,5 +16,7 @@ class Sphere : public Shape{
     public:
         Sphere(Direction axis, Point center, RGB emission);
         void setCoords(float data[9]);
-        PossibleSolution<Point> findFirstIntersectionWithLine(Direction d, Point o);
+        void findFirstIntersectionWithLine(Direction d, Point o, struct PossibleSolution<Point> result[]);
 };
+
+#endif

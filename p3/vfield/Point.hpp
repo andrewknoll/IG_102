@@ -1,7 +1,7 @@
 #include "Direction.hpp"
 
-#ifndef POINT
-#define POINT
+#ifndef __POINT__
+#define __POINT__
 
 class Point : public Coordinates{
 

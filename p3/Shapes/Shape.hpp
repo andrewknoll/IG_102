@@ -1,13 +1,19 @@
-#include "Color/RGB.hpp"
-#include "vfield/Operations.hpp"
+#ifndef __SHAPE__
+#define __SHAPE__
+
+#include "../Color/RGB.hpp"
+#include "../vfield/Operations.hpp"
+#include "../vfield/PossibleSolution.hpp"
 
 class Shape{
     protected:
         RGB emission;
 
     public:
-        virtual PossibleSolution<Point> findFirstIntersectionWithLine(Direction d, Point o);
+        virtual void findFirstIntersectionWithLine(Direction d, Point o, struct PossibleSolution<Point> result[])=0;
         RGB getEmission();
         void setEmission(RGB emission);
 
 };
+
+#endif

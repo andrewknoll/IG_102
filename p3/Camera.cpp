@@ -1,7 +1,19 @@
 #include "Camera.hpp"
 
+Camera::Camera(){
+    Direction u(0,1,0), l(1,0,0), f(0,0,1);
+    Point o(0,0,0);
+    this->up=u;
+    this->left=l;
+    this->front=f;
+    this->origin=o;
+}
+
 Camera::Camera(int width, int height, Point target, double FOV, bool hfov){
-    Direction up(1,0,0), left(0,1,0), front(0,0,1);
+    Direction u(0,1,0), l(1,0,0), f(0,0,1);
+    up = u;
+    left = l;
+    front = f;
     setAspectRatio(width, height);
     if(hfov) setHFOV(FOV);
     else     setVFOV(FOV);
@@ -27,7 +39,7 @@ void Camera::setCoord(Direction u, Direction l, Direction f){
 }
 
 void Camera::setAspectRatio(int width, int height){
-    up = left * height / width;
+    up = up * (left.modulus() * height / width);
 }
 
 void Camera::setHFOV(double angle){
@@ -54,4 +66,12 @@ Direction Camera::getFront(){
 
 Point Camera::getOrigin(){
     return origin;
+}
+
+Point Camera::changeToGlobalCoordinates(Point p){
+    return baseChange(p, origin, left, up, front);
+}
+
+Direction Camera::changeToGlobalCoordinates(Direction d){
+    return baseChange(d, origin, left, up, front);
 }

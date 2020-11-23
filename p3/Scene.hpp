@@ -1,20 +1,21 @@
+#ifndef __SCENE__
+#define __SCENE__
+
 #include "vfield/Direction.hpp"
 #include "vfield/Point.hpp"
 #include "Shapes/Shape.hpp"
 #include "Camera.hpp"
+#include <memory>
 
-#include <list>
+#include <vector>
 
 using namespace std;
-using ShapeIterator = std::list<Shape>::iterator;
 
 class Scene{
     private:
         int height, width; // Size (in pixels) of the projection plane
-        list<Shape> list; // Geometries which compose the scene
+        vector<shared_ptr<Shape> > objects; // Geometries which compose the scene
         Camera camera;
-
-        ShapeIterator si;
 
     public:
         Scene(int height, int width);
@@ -25,17 +26,17 @@ class Scene{
         void setWidth(int width);
         void setHeight(int height);
         void setCamera(Camera camera);
-        void buildCameraFromHFOV(int HFOV, Point target);
-        void buildCameraFromVFOV(int HFOV, Point target);
+        void buildCameraFromHFOV(float HFOV, Point target);
+        void buildCameraFromVFOV(float HFOV, Point target);
 
         Point getTarget();
         Camera getCamera();
 
-        void addShape(Shape s);
+        void addShape(shared_ptr<Shape> s);
 
-        Shape first();
-        bool hasNext();
-        Shape next();
+        shared_ptr<Shape> getShape(int i);
         int length();
         
 };
+
+#endif

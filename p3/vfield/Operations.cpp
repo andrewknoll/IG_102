@@ -144,28 +144,14 @@ Coordinates baseChange(Coordinates& coord, const Point o, const Direction u, con
     return baseChangeGeneric(coord, o, u, v, w);
 }
 
-template <typename T>
-struct PossibleSolution{
-    private:
-        bool exists = false;
-        T solution;
-
-    public:
-        void setRoot(T s){
-            solution = s;
-        }
-        T getRoot(){
-            return solution;
-        }
-        bool doesExist(){
-            return exists;
-        }
-};
-
-void solveQuadraticEquation(double a, double b, double c, PossibleSolution<double> results[2]){
+void solveQuadraticEquation(double a, double b, double c, struct PossibleSolution<double> results[2]){
     double insideSquareRoot = b*b - 4*a*c;
     if(insideSquareRoot >= 0){
         results[0].setSolution((-b + sqrt(insideSquareRoot))/(2*a));
         results[1].setSolution((-b - sqrt(insideSquareRoot))/(2*a));
     }
+}
+
+float distance(Point a, Point b){
+    return (b - a).modulus();
 }

@@ -1,5 +1,5 @@
-#ifndef MATRIX4
-#define MATRIX4
+#ifndef __MATRIX4__
+#define __MATRIX4__
 
 #include <iostream>
 #include <iomanip>

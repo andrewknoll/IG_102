@@ -1,7 +1,7 @@
 #include "Coordinates.hpp"
 
-#ifndef DIRECTION
-#define DIRECTION
+#ifndef __DIRECTION__
+#define __DIRECTION__
 
 class Direction : public Coordinates{
 

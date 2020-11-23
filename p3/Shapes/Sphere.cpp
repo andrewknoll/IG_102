@@ -1,5 +1,6 @@
 #include "Sphere.hpp"
 
+
 Sphere::Sphere(Direction axis, Point center, RGB emission){
     this->axis = axis;
     this->center = center;
@@ -14,15 +15,20 @@ void Sphere::setCoords(float data[6]){
     emission.set(data[2], 2);
 }
 
-PossibleSolution<Point> Sphere::findFirstIntersectionWithLine(Direction d, Point o){
-    PossibleSolution<double> roots[2];
-    PossibleSolution<Point> result;
+void Sphere::findFirstIntersectionWithLine(Direction d, Point o, struct PossibleSolution<Point> result[]){
+    struct PossibleSolution<double> roots[2];
     double a = d.modulus() * d.modulus();
     double b = 2 * d * (o - center);
-    double c = (o - center).modulus() - (axis / 2).modulus();
+    Point aux = (o - center);
+    double r = (axis).modulus() / 2;
+    double c = aux * aux - r * r;
     solveQuadraticEquation(a, b, c, roots);
     if(roots[0].doesExist()){
-        result.setSolution(roots[0].getSolution() * d);
+        result[0].setSolution(roots[0].getSolution() * d);
+        result[1].setSolution(roots[1].getSolution() * d);
     }
-    return result;
+    else{
+        result[0].setNotReal();
+        result[1].setNotReal();
+    }
 }
