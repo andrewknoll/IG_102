@@ -3,9 +3,9 @@
 void Image::setWidthHeight(int width, int height){
     this->width = width;
     this->height = height;
-    m.resize(height);
-    for(int i = 0; i < height; i++){
-        m[i].resize(width);
+    m.resize(width);
+    for(int i = 0; i < width; i++){
+        m[i].resize(height);
     }
 }
 string Image::getFormat(){
@@ -106,9 +106,9 @@ void Image::read(string filename){
                 istringstream stream(buffer);
                 if(!whRead){
                     stream >> width >> height;
-                    m.resize(height);
-                    for(int i = 0; i < height; i++){
-                        m[i].resize(width);
+                    m.resize(width);
+                    for(int i = 0; i < width; i++){
+                        m[i].resize(height);
                     }
                     whRead = true;
 
@@ -122,8 +122,8 @@ void Image::read(string filename){
         }
         //no more comments can be found in the document (starts to read RGB tuples)
         if(!f.eof()){
-            for(int i = 0; i < height && !f.eof(); i++){
-                for(int j = 0; j < width && !f.eof(); j++){
+            for(int i = 0; i < width && !f.eof(); i++){
+                for(int j = 0; j < height && !f.eof(); j++){
                     int rgb[3];
                     float rgbReal[3];
                     for(int k = 0; k < 3 && !f.eof(); k++){
@@ -142,7 +142,7 @@ void Image::read(string filename){
         f.close();
     }
     else{
-        cerr << "Auxilio" << endl;
+        cerr << "Error" << endl;
     }
 }
 
@@ -155,8 +155,8 @@ void Image::applyToneMapper(){
         maxAfterMapping = 0.0;
         RGB tuple;
         float color;
-        for(int i = 0; i < height; i++){
-            for(int j = 0; j < width; j++){
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j < height; j++){
                 tuple = m[i][j];
                 for(int k = 0; k < 3; k++){
 
@@ -175,8 +175,8 @@ void Image::applyToneMapper(){
 
 void Image::toString(){
     cout << format << endl << max << endl << width << endl << height << endl << colorRes << endl;
-    for(int i = 0; i < height; i++){
-        for(int j = 0; j < width; j++){
+    for(int i = 0; i < width; i++){
+        for(int j = 0; j < height; j++){
             m[i][j].toString();
             cout << "    " << endl;
         }

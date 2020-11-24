@@ -144,12 +144,15 @@ Coordinates baseChange(Coordinates& coord, const Point o, const Direction u, con
     return baseChangeGeneric(coord, o, u, v, w);
 }
 
-void solveQuadraticEquation(double a, double b, double c, struct PossibleSolution<double> results[2]){
+bool solveQuadraticEquation(double a, double b, double c, double results[2]){
     double insideSquareRoot = b*b - 4*a*c;
-    if(insideSquareRoot >= 0){
-        results[0].setSolution((-b + sqrt(insideSquareRoot))/(2*a));
-        results[1].setSolution((-b - sqrt(insideSquareRoot))/(2*a));
+    bool isReal = (insideSquareRoot >= 0);
+    if(isReal){
+        results[0] = (-b + sqrt(insideSquareRoot))/(2*a);
+        results[1] = (-b - sqrt(insideSquareRoot))/(2*a);
     }
+
+    return isReal;
 }
 
 float distance(Point a, Point b){

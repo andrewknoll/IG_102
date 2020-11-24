@@ -65,8 +65,8 @@ void generateBMP(Image& img, string output){
         float red, green, blue;
         byte redByte, greenByte, blueByte;
         //PIXEL DATA (stored bottom to top)
-        for(int i = height - 1; i >= 0; i--){
-            for(int j = 0; j < width; j++){
+        for(int j = height -1; j >= 0; j--){
+            for(int i = 0; i < width; i++){
                 red = img.getTuple(i, j).get(0);
                 green = img.getTuple(i, j).get(1);
                 blue = img.getTuple(i, j).get(2);
@@ -85,7 +85,7 @@ void generateBMP(Image& img, string output){
             }
             
             cout << "\r " << flush;
-            cout << 100.0 * ((height-i)*width) / (width*height) << "%";
+            cout << 100.0 * ((width-j)*height) / (width*height) << "%";
         }
         cout << "\r 100.00%" << endl;
     }
@@ -104,7 +104,7 @@ int main(){
     Point point2(17, 0, 60);
     Point point3(-17, 0, 80);
     RGB rgb(255, 0 , 0);
-    Point o(0, 20, -6);
+    Point o(0, 0, -6);
 
     Direction n(0, 0, -1);
     RGB rgb4(0, 50, 50);

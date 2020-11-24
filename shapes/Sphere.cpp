@@ -15,20 +15,30 @@ void Sphere::setCoords(float data[6]){
     emission.set(data[2], 2);
 }
 
-void Sphere::findFirstIntersectionWithLine(Direction d, Point o, struct PossibleSolution<Point> result[]){
-    struct PossibleSolution<double> roots[2];
-    double a = d.modulus() * d.modulus();
-    double b = 2 * d * (o - center);
-    Point aux = (o - center);
-    double r = (axis).modulus() / 2;
-    double c = aux * aux - r * r;
-    solveQuadraticEquation(a, b, c, roots);
-    if(roots[0].doesExist()){
-        result[0].setSolution(roots[0].getSolution() * d);
-        result[1].setSolution(roots[1].getSolution() * d);
+int Sphere::findIntersectionWithLine(Direction d, Point o, Point result[]){
+    double roots[2];
+    double a, b, c, r;
+    Point aux;
+    bool isReal;
+    int intersections = 0;
+
+    a = d.modulus() * d.modulus();
+    b = 2 * d * (o - center);
+    aux = (o - center);
+    r = (axis).modulus() / 2;
+    c = aux * aux - r * r;
+
+    isReal = solveQuadraticEquation(a, b, c, roots);
+    if(isReal){
+        result[0] = roots[0] * d;
+        result[1] = roots[1] * d;
+        if(roots[0] != roots[1]){
+            intersections = 2;
+        }
+        else{
+            intersections = 1;
+        }
     }
-    else{
-        result[0].setNotReal();
-        result[1].setNotReal();
-    }
+
+    return intersections;
 }

@@ -46,6 +46,12 @@ void RGB::set(float c, int i){
     }
 }
 
+void RGB::reset(){
+    red = 0;
+    green = 0;
+    blue = 0;
+}
+
 RGB calculateRGBMean(vector<RGB> v){
     float results[3];
     int size = v.size();

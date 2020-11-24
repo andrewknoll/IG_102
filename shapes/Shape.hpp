@@ -3,14 +3,13 @@
 
 #include "../color/RGB.hpp"
 #include "../vfield/Operations.hpp"
-#include "../vfield/PossibleSolution.hpp"
 
 class Shape{
     protected:
         RGB emission;
 
     public:
-        virtual void findFirstIntersectionWithLine(Direction d, Point o, struct PossibleSolution<Point> result[])=0;
+        virtual int findIntersectionWithLine(Direction d, Point o, Point result[])=0;
         RGB getEmission();
         void setEmission(RGB emission);
 

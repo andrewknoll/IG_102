@@ -16,7 +16,8 @@ void Plane::setAll(float coord[3], int distance, float emission[3]){
     this->emission.set(emission[2], 2);
 }
 
-void Plane::findFirstIntersectionWithLine(Direction d, Point o, struct PossibleSolution<Point> result[]){
+int Plane::findIntersectionWithLine(Direction d, Point o, Point result[]){
     float t = -(distanceToOrigin + (o * normal))/(d * normal);
-    result[0].setSolution((d * t) + o);
+    result[0] = (d * t) + o;
+    return 1;
 }

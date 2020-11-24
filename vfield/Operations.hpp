@@ -1,7 +1,6 @@
 #include "Point.hpp"
 #include "Direction.hpp"
 #include <math.h>
-#include "PossibleSolution.hpp"
 
 #ifndef __OPERATIONS__
 #define __OPERATIONS__
@@ -51,7 +50,7 @@ Point baseChange(Point& coord, const Point o, const Direction u, const Direction
 Direction baseChange(Direction& coord, const Point o, const Direction u, const Direction v, const Direction w);
 Coordinates baseChange(Coordinates& coord, const Point o, const Direction u, const Direction v, const Direction w);
 
-void solveQuadraticEquation(double a, double b, double c, struct PossibleSolution<double> results[2]);
+bool solveQuadraticEquation(double a, double b, double c, double results[2]);
 float distance(Point a, Point b);
 
 #endif

@@ -1,13 +1,6 @@
 #include "rayTracer.hpp"
-#include <random>
-#include <vector>
-#include <memory>
-#include <limits>
-#include <iomanip>
 
 using namespace std;
-
-const double MAX_DOUBLE = numeric_limits<double>::max();
 
 void rayTrace(Image& img, Scene scene, int rpp){
     Direction d;
@@ -23,61 +16,55 @@ void rayTrace(Image& img, Scene scene, int rpp){
     int nShapes = scene.length();
     unsigned int iterationsNecessary = width * height * rpp * nShapes;
 
-
-    float offset[2] = {height/2.0f, width/2.0f};
-
-    struct PossibleSolution<Point> ps[2];
-
-    double minDistance = MAX_DOUBLE;
-    shared_ptr<Shape> closestShape = nullptr;
-
-    float currentDistance;
-    Point currentPoint;
     unsigned currentIteration = 0;
 
-    
+    Ray ray;
+    ray.setOrigin(o);
 
     if(nShapes > 0){
         cout << fixed << setprecision(2);
         cout << "Applying Ray Tracing Algorithm to the scene..." << endl;
-        for(int i = 0; i < height; i++){
-            for(int j = 0; j < width; j++){
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j < height; j++){
                 for(int r = 0; r < rpp; r++){
-                    d.setAll((j + rng.getNumber() - offset[0])/height , (i + rng.getNumber() - offset[1])/width , 1);
+                    /*Set d to a point of the projection plane (between -1 and 1)
+                     *  The projection plane maps the image:
+                     *      image[i, j] = projectionPlane[x, y] 
+                     *
+                     *      Relationship?
+                     *          (x, y) = (i*a + b, j*c + d)   => We must find a, b, c, d
+                     * 
+                     *      nx and ny are the dimensions of the image
+                     *      image[0, 0] = projectionPlane[-1, -1]
+                     *          => (-1, -1) = (b, d)
+                     *          => b = -1; d = -1
+                     * 
+                     * 
+                     *      image[nx, ny] = projectionPlane[1, 1]  => (1, 1) = (nx*a -1, ny*c -1)
+                     * 
+                     *      Therefore:
+                     *          nx*a -1 = 1
+                     *              => nx*a = 2
+                     *              => a = 2/nx
+                     * 
+                     *          ny*c -1 = 1
+                     *              => ny*c = 2
+                     *              => c = 2/ny
+                     * 
+                     *          x = i*(2/nx) -1
+                     *          y = j*(2/ny) -1
+                     * 
+                     *          image[i, j] = projectionPlane[2i/nx -1, 2j/ny -1]
+                     *          we will also add a random factor for antialias            
+                     */
+                    d.setAll((2*i + rng.getNumber(0,1))/width - 1 , (2*j + rng.getNumber(0,1))/height -1 , 1);
                     d.normalize();
                     d = camera.changeToGlobalCoordinates(d);
 
-                    closestShape = nullptr; //Reset closest shape
-                    minDistance = MAX_DOUBLE;   //Reset minimum distance
+                    ray.setDirection(d);    //Set the new direction as the ray's direction
+                    rayResult[r] = ray.getRayResult(scene); //Take RGB component found by the ray
 
-                    for(int s = 0; s < nShapes; s++){ //Iterate through all shapes in scene
-                        scene.getShape(s)->findFirstIntersectionWithLine(d, o, ps); //Find intersection with ray
-                    
-                        if(ps[0].doesExist()){ //If solution is real
-
-                            //Do one iteration if only one solution has been found
-                            //Do two if two solutions have been found
-                            for(int sol = 0; sol < (ps[1].doesExist() ? 2: 1); sol++){
-                                currentPoint = ps[sol].getSolution();    //Get solution
-                                currentDistance = distance(currentPoint, o);    //Get distance to origin
-
-                                if(minDistance > currentDistance && currentPoint.getZ() >= o.getZ()){    //If distance is the smallest found AND object is not behind the camera
-                                    minDistance = currentDistance;  //Update minimum distance
-                                    closestShape = scene.getShape(s);    //Update closest shape to camera
-                                }
-                            }
-                            
-                        }
-                        currentIteration++;
-                    }
-
-                    if(closestShape != nullptr){    //If any intersection was found with ray
-                        rayResult[r] = closestShape->getEmission(); //Set ray's color to the closest object's emission
-                    }
-                    
-                    else{
-                        rayResult[r] = RGB(0, 0, 0);    //otherwise set it to black
-                    }
+                    currentIteration += nShapes;
                 }
                 cout << "\r " << currentIteration * 100.0 / iterationsNecessary  << "%";
                 img.setTuple(calculateRGBMean(rayResult), i, j);

@@ -17,6 +17,7 @@ class RGB{
         void toString();
         float get(int i);
         void set(float c, int i);
+        void reset();
 };
 
 RGB calculateRGBMean(vector<RGB> v);

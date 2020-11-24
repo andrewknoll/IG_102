@@ -17,12 +17,13 @@ matrix=Matrix4
 oper=Operations
 scene=Scene
 camera=Camera
-ray=rayTracer
+rayTr=rayTracer
+ray=Ray
 equClamp=EqualizeAndClamp
 
 ##link
-$(main):  $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(sphere).o $(scene).o $(shape).o $(camera).o $(ray).o $(rgb).o $(oper).o $(main).o
-	$(CC) $(CFLAGS) $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(shape).o $(sphere).o $(scene).o $(camera).o $(ray).o $(rgb).o $(oper).o $(main).o -o $(main)
+$(main):  $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(sphere).o $(scene).o $(shape).o $(camera).o $(ray).o $(rgb).o $(oper).o $(rayTr).o $(main).o
+	$(CC) $(CFLAGS) $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(shape).o $(sphere).o $(scene).o $(camera).o $(ray).o $(rgb).o $(oper).o $(rayTr).o $(main).o -o $(main)
 
 ##compile
 
@@ -61,6 +62,9 @@ $(point).o: $(vfieldDir)/$(point).cpp
 
 $(matrix).o: $(vfieldDir)/$(matrix).cpp
 	$(CC) $(CFLAGS) $(vfieldDir)/$(matrix).cpp -c
+
+$(rayTr).o: $(rayTr).cpp
+	$(CC) $(CFLAGS) $(rayTr).cpp -c
 
 $(oper).o: $(vfieldDir)/$(oper).cpp
 	$(CC) $(CFLAGS) $(vfieldDir)/$(oper).cpp -c
