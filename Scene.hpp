@@ -3,7 +3,7 @@
 
 #include "vfield/Direction.hpp"
 #include "vfield/Point.hpp"
-#include "Shapes/Shape.hpp"
+#include "shapes/Shape.hpp"
 #include "Camera.hpp"
 #include <memory>
 

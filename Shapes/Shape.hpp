@@ -1,7 +1,7 @@
 #ifndef __SHAPE__
 #define __SHAPE__
 
-#include "../Color/RGB.hpp"
+#include "../color/RGB.hpp"
 #include "../vfield/Operations.hpp"
 #include "../vfield/PossibleSolution.hpp"
 

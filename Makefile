@@ -1,11 +1,11 @@
 CC=g++
 CFLAGS=-Wall -std=c++11 -ggdb
 img=Image
-imgDir=Images
-colorDir=Color
+imgDir=imaging
+colorDir=color
 rgb=RGB
 main=test
-shapeDir=Shapes
+shapeDir=shapes
 plane=Plane
 shape=Shape
 sphere=Sphere

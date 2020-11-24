@@ -1,9 +1,9 @@
 #include "Scene.hpp"
-#include "Shapes/Sphere.hpp"
-#include "Shapes/Plane.hpp"
+#include "shapes/Sphere.hpp"
+#include "shapes/Plane.hpp"
 #include "vfield/Direction.hpp"
 #include "vfield/Point.hpp"
-#include "Color/RGB.hpp"
+#include "color/RGB.hpp"
 #include <math.h>
 #include "rayTracer.hpp"
 #include <memory>
@@ -56,7 +56,7 @@ void generateBMP(Image& img, string output){
         binWrite(fout, 0); //ImageSize (if not compressed can be set to 0)
         binWrite(fout, 0); //XpixelsPerM (can be set to 0 if no preference)
         binWrite(fout, 0); //YpixelsPerM (can be set to 0 if no preference)
-        binWrite(fout, 1 << BMP_BITS_PER_PIXEL);  //Color resolution (2^bits_per_pixel)
+        binWrite(fout, 1 << BMP_BITS_PER_PIXEL);  //color resolution (2^bits_per_pixel)
         binWrite(fout, 0); //Important colors (0 = all)
 
         //COLOR TABLE NOT NECESSARY FOR IMAGES OF MORE THAN 8 COLORS

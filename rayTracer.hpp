@@ -2,9 +2,9 @@
 #define __RAYTRACER__
 
 #include "Scene.hpp"
-#include "Images/Image.hpp"
-#include "Color/RGB.hpp"
-#include "Shapes/Shape.hpp"
+#include "imaging/Image.hpp"
+#include "color/RGB.hpp"
+#include "shapes/Shape.hpp"
 #include "vfield/Point.hpp"
 #include "vfield/Direction.hpp"
 #include "vfield/Operations.hpp"
