@@ -13,9 +13,12 @@ class Sphere : public Shape{
         Point center;
 
     public:
-        Sphere(Direction axis, Point center, RGB emission);
-        void setCoords(float data[9]);
-        int findIntersectionWithLine(Direction d, Point o, Point result[]);
+        Sphere(Direction axis, Point center);
+        void setCoords(float data[6]);
+        int findIntersectionWithLine(Direction d, Point o, double result[]);
+        Direction getNormalAtPoint(Point p);
+        void calculateTangentsAtPoint(Point p, Direction& t1, Direction& t2);
+
 };
 
 #endif

@@ -1,9 +1,9 @@
 #include "Shape.hpp"
 
-RGB Shape::getEmission(){
-    return this->emission;
+Material Shape::getMaterial(){
+    return this->material;
 }
 
-void Shape::setEmission(RGB emission){
-    this->emission = emission;
+void Shape::setMaterial(Material material){
+    this->material = material;
 };

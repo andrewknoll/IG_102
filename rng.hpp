@@ -5,13 +5,13 @@
 
 using namespace std;
 
-struct randomNumberGen{
+struct{
     default_random_engine re;
 
     double getNumber(double min, double max){
         uniform_real_distribution<double> unif{min, max};
         return unif(re);
     }
-};
+} rng;
 
 #endif

@@ -1,5 +1,13 @@
 #include "Operations.hpp"
 
+Point operator-(Point& p){
+    return Point(-p['x'], -p['y'], -p['z']);
+}
+
+Direction operator-(Direction& d){
+    return Direction(-d['x'], -d['y'], -d['z']);
+}
+
 // Point + Direction
 Point operator+(const Point p, const Direction d){
     return Point(p['x'] + d['x'], p['y'] + d['y'], p['z'] + d['z']);
@@ -144,6 +152,33 @@ Coordinates baseChange(Coordinates& coord, const Point o, const Direction u, con
     return baseChangeGeneric(coord, o, u, v, w);
 }
 
+template <class T>
+T baseChangeGenericInverse(T& coord, const Point o, const Direction u, const Direction v, const Direction w){
+    Matrix4 mat;
+    mat.setColumn(0, u.getVector());
+    mat.setColumn(1, v.getVector());
+    mat.setColumn(2, w.getVector());
+    mat.setColumn(3, o.getVector());
+
+    Matrix4 inv = mat.inverse();
+
+    return inv * coord;
+}
+
+Point baseChangeInverse(Point& coord, const Point o, const Direction u, const Direction v, const Direction w){
+    Point result = baseChangeGenericInverse(coord, o, u, v, w);
+    return result;
+}
+
+Direction baseChangeInverse(Direction& coord, const Point o, const Direction u, const Direction v, const Direction w){
+    Direction result = baseChangeGenericInverse(coord, o, u, v, w);
+    return result;
+}
+
+Coordinates baseChangeInverse(Coordinates& coord, const Point o, const Direction u, const Direction v, const Direction w){
+    return baseChangeGenericInverse(coord, o, u, v, w);
+}
+
 bool solveQuadraticEquation(double a, double b, double c, double results[2]){
     double insideSquareRoot = b*b - 4*a*c;
     bool isReal = (insideSquareRoot >= 0);
@@ -157,4 +192,13 @@ bool solveQuadraticEquation(double a, double b, double c, double results[2]){
 
 float distance(Point a, Point b){
     return (b - a).modulus();
+}
+
+void getAnglesByCosineSampling(double& inclination, double& azimuth){
+    inclination = acos(sqrt(1 - rng.getNumber(0,1)));
+    azimuth = 2.0 * M_PI * rng.getNumber(0,1);
+}
+
+float findAngle(Direction a, Direction b){
+    return acos((a * b)/(a.modulus() * b.modulus()));
 }

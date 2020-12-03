@@ -1,6 +1,10 @@
+#ifndef __RAY__
+#define __RAY__
+
 #include <memory>
 #include <limits>
 #include "shapes/Shape.hpp"
+#include "materials/Material.hpp"
 #include "Scene.hpp"
 
 
@@ -16,9 +20,12 @@ class Ray{
         Direction dir;
 
     public:
+        Direction getDirection();
         void setDirection(Direction dir);
         void setOrigin(Point origin);
 
-        int findIntersectionWith(ShapePtr shape, Point solutions[]);
+        int findIntersectionWith(ShapePtr shape, double solutions[]);
         RGB getRayResult(Scene& scene);
 };
+
+#endif

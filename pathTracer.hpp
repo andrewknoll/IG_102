@@ -1,5 +1,5 @@
-#ifndef __RAYTRACER__
-#define __RAYTRACER__
+#ifndef __PATHTRACER__
+#define __PATHTRACER__
 
 #include "rng.hpp"
 #include "Scene.hpp"
@@ -18,6 +18,6 @@
 
 using namespace std;
 
-void rayTrace(Image& img, Scene scene, int rpp);
+void pathTrace(Image& img, Scene scene, int rpp);
 
 #endif

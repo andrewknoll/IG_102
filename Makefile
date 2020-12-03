@@ -17,16 +17,18 @@ matrix=Matrix4
 oper=Operations
 scene=Scene
 camera=Camera
-rayTr=rayTracer
+pathTr=pathTracer
 ray=Ray
+material=Material
+matDir=materials
+rng=rng
 equClamp=EqualizeAndClamp
 
 ##link
-$(main):  $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(sphere).o $(scene).o $(shape).o $(camera).o $(ray).o $(rgb).o $(oper).o $(rayTr).o $(main).o
-	$(CC) $(CFLAGS) $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(shape).o $(sphere).o $(scene).o $(camera).o $(ray).o $(rgb).o $(oper).o $(rayTr).o $(main).o -o $(main)
+$(main):  $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(sphere).o $(scene).o $(shape).o $(camera).o $(ray).o $(rgb).o $(oper).o $(material).o $(pathTr).o $(main).o
+	$(CC) $(CFLAGS) $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(shape).o $(sphere).o $(scene).o $(camera).o $(ray).o $(rgb).o $(oper).o $(material).o $(pathTr).o $(main).o -o $(main)
 
 ##compile
-
 $(rgb).o: $(colorDir)/$(rgb).cpp $(colorDir)/$(rgb).hpp
 	$(CC) $(CFLAGS) $(colorDir)/$(rgb).cpp -c
 
@@ -41,6 +43,9 @@ $(shape).o: $(shapeDir)/$(shape).cpp
 
 $(sphere).o: $(shapeDir)/$(sphere).cpp
 	$(CC) $(CFLAGS) $(shapeDir)/$(sphere).cpp -c
+
+$(material).o: $(matDir)/$(material).cpp
+	$(CC) $(CFLAGS) $(matDir)/$(material).cpp -c
 
 $(scene).o: $(scene).cpp
 	$(CC) $(CFLAGS) $(scene).cpp -c
@@ -63,8 +68,8 @@ $(point).o: $(vfieldDir)/$(point).cpp
 $(matrix).o: $(vfieldDir)/$(matrix).cpp
 	$(CC) $(CFLAGS) $(vfieldDir)/$(matrix).cpp -c
 
-$(rayTr).o: $(rayTr).cpp
-	$(CC) $(CFLAGS) $(rayTr).cpp -c
+$(pathTr).o: $(pathTr).cpp
+	$(CC) $(CFLAGS) $(pathTr).cpp -c
 
 $(oper).o: $(vfieldDir)/$(oper).cpp
 	$(CC) $(CFLAGS) $(vfieldDir)/$(oper).cpp -c

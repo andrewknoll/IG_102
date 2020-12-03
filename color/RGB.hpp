@@ -18,6 +18,10 @@ class RGB{
         float get(int i);
         void set(float c, int i);
         void reset();
+        float max();
+        RGB operator*(RGB& b);
+        RGB operator*(double b);
+        RGB operator/(double b);
 };
 
 RGB calculateRGBMean(vector<RGB> v);

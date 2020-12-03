@@ -52,6 +52,17 @@ void RGB::reset(){
     blue = 0;
 }
 
+float RGB::max(){
+    float r = red;
+    if(r < green){
+        r = green;
+    }
+    if(r < blue){
+        r = blue;
+    }
+    return r;
+}
+
 RGB calculateRGBMean(vector<RGB> v){
     float results[3];
     int size = v.size();
@@ -61,4 +72,19 @@ RGB calculateRGBMean(vector<RGB> v){
         }
     }
     return RGB(results[0] / size, results[1] / size, results[2] / size);
+}
+
+//operator used for coefficient products
+RGB RGB::operator*(RGB&b){
+    return RGB(get(0)*b.get(0), get(1)*b.get(1), get(2)*b.get(2));
+}
+
+//operator used for coefficient products
+RGB RGB::operator*(double b){
+    return RGB(get(0)*b, get(1)*b, get(2)*b);
+}
+
+//operator used for coefficient products
+RGB RGB::operator/(double b){
+    return RGB(get(0)/b, get(1)/b, get(2)/b);
 }

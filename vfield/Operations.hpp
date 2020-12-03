@@ -1,9 +1,17 @@
 #include "Point.hpp"
 #include "Direction.hpp"
+#include "../rng.hpp"
 #include <math.h>
 
 #ifndef __OPERATIONS__
 #define __OPERATIONS__
+
+
+//Unary -
+Point operator-(Point& p);
+
+//Unary -
+Direction operator-(Direction& d);
 
 // Point + Direction
 Point operator+(const Point p, const Direction d);
@@ -50,7 +58,16 @@ Point baseChange(Point& coord, const Point o, const Direction u, const Direction
 Direction baseChange(Direction& coord, const Point o, const Direction u, const Direction v, const Direction w);
 Coordinates baseChange(Coordinates& coord, const Point o, const Direction u, const Direction v, const Direction w);
 
+template <class T>
+T baseChangeGenericInverse(T& coord, const Point o, const Direction u, const Direction v, const Direction w);
+Point baseChangeInverse(Point& coord, const Point o, const Direction u, const Direction v, const Direction w);
+Direction baseChangeInverse(Direction& coord, const Point o, const Direction u, const Direction v, const Direction w);
+Coordinates baseChangeInverse(Coordinates& coord, const Point o, const Direction u, const Direction v, const Direction w);
+
 bool solveQuadraticEquation(double a, double b, double c, double results[2]);
 float distance(Point a, Point b);
+
+void getAnglesByCosineSampling(double& inclination, double& azimuth);
+float findAngle(Direction a, Direction b);
 
 #endif

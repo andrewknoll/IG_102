@@ -13,9 +13,13 @@ class Plane : public Shape{
         Direction normal;
 
     public:
-        Plane(Direction normal, int distance, RGB emission);
-        void setAll(float coord[3], int distance, float emission[3]);
-        int findIntersectionWithLine(Direction d, Point o, Point result[]);
+        Plane(Direction normal, int distance);
+        void setAll(float coord[3], int distance);
+        int findIntersectionWithLine(Direction d, Point o, double result[]);
+        Direction getNormalAtPoint(Point p);
+        void calculateTangentsAtPoint(Point p, Direction& t1, Direction& t2);
+
+        Point getRandomPoint();
     
 };
 

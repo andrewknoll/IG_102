@@ -5,7 +5,7 @@
 #include "vfield/Point.hpp"
 #include "color/RGB.hpp"
 #include <math.h>
-#include "rayTracer.hpp"
+#include "pathTracer.hpp"
 #include <memory>
 
 
@@ -103,22 +103,39 @@ int main(){
     Point p(0, 0, 70);
     Point point2(17, 0, 60);
     Point point3(-17, 0, 80);
-    RGB rgb(255, 0 , 0);
+    RGB rgb(1, 0 , 0);
     Point o(0, 0, -6);
 
     Direction n(0, 0, -1);
-    RGB rgb4(0, 50, 50);
+    RGB rgb4(0, 0.5, 0.5);
 
-    RGB rgb2(0, 255, 0);
-    RGB rgb3(0, 0, 255);
+    RGB rgb2(0, 1, 0);
+    RGB rgb3(0, 0, 1);
+
+    Material diffuse;
+    diffuse.setAsDiffuse(rgb);
+
+    Material dielectric;
+    dielectric.setAsDielectric(rgb4, rgb4);
+
+    Material plastic;
+    plastic.setAsPlastic(rgb2, rgb2);
+
+    Material emission;
+    emission.setAsLightSource(rgb3);
 
     Scene escena(400, 400);
     escena.buildCameraFromVFOV(M_PI/2, o);
 
-    shared_ptr<Sphere> p1 = make_shared<Sphere>(a, p, rgb);
-    shared_ptr<Plane> p2 = make_shared<Plane>(n, 90, rgb4);
-    shared_ptr<Sphere> p3 = make_shared<Sphere>(a, point2, rgb2);
-    shared_ptr<Sphere> p4 = make_shared<Sphere>(a, point3, rgb3);
+    shared_ptr<Sphere> p1 = make_shared<Sphere>(a, p);
+    shared_ptr<Plane> p2 = make_shared<Plane>(n, 90);
+    shared_ptr<Sphere> p3 = make_shared<Sphere>(a, point2);
+    shared_ptr<Sphere> p4 = make_shared<Sphere>(a, point3);
+
+    p1->setMaterial(emission);
+    p2->setMaterial(diffuse);
+    p3->setMaterial(plastic);
+    p4->setMaterial(dielectric);
 
     escena.addShape(p1);
     escena.addShape(p2);
@@ -129,7 +146,7 @@ int main(){
     img.setWidthHeight(400, 400);
     img.test(255, 255);
 
-    rayTrace(img, escena, 32);
+    pathTrace(img, escena, 32);
 
     generateBMP(img, "output.bmp");
 
