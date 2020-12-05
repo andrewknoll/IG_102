@@ -102,24 +102,26 @@ int main(){
     Direction a(0, 0, 25);
     Point p(0, 0, 70);
     Point point2(17, 0, 60);
-    Point point3(-17, 0, 80);
-    RGB rgb(1, 0 , 0);
+    Point point3(-30, 0, 90);
+    RGB rgb(0.9, 0 , 0);
     Point o(0, 0, -6);
+    RGB black(0, 0, 0);
 
     Direction n(0, 0, -1);
     RGB rgb4(0, 0.5, 0.5);
 
-    RGB rgb2(0, 1, 0);
-    RGB rgb3(0, 0, 1);
+    RGB rgb2(0.25, 0.75, 0.16);
+    RGB rgb5(0.25, 1, 0.16);
+    RGB rgb3(1, 1, 1);
 
     Material diffuse;
     diffuse.setAsDiffuse(rgb);
 
     Material dielectric;
-    dielectric.setAsDielectric(rgb4, rgb4);
+    dielectric.setAsDielectric(rgb3, rgb3);
 
     Material plastic;
-    plastic.setAsPlastic(rgb2, rgb2);
+    plastic.setAsPlastic(rgb2, rgb5);
 
     Material emission;
     emission.setAsLightSource(rgb3);
@@ -128,25 +130,25 @@ int main(){
     escena.buildCameraFromVFOV(M_PI/2, o);
 
     shared_ptr<Sphere> p1 = make_shared<Sphere>(a, p);
-    shared_ptr<Plane> p2 = make_shared<Plane>(n, 90);
+    shared_ptr<Plane> p2 = make_shared<Plane>(n, 1000);
     shared_ptr<Sphere> p3 = make_shared<Sphere>(a, point2);
     shared_ptr<Sphere> p4 = make_shared<Sphere>(a, point3);
 
     p1->setMaterial(emission);
-    p2->setMaterial(diffuse);
-    p3->setMaterial(plastic);
-    p4->setMaterial(dielectric);
+    p2->setMaterial(plastic);
+    p3->setMaterial(diffuse);
+    p4->setMaterial(diffuse);
 
     escena.addShape(p1);
-    escena.addShape(p2);
+    //escena.addShape(p2);
     escena.addShape(p3);
     escena.addShape(p4);
 
     Image img;
     img.setWidthHeight(400, 400);
-    img.test(255, 255);
+    img.test(1, 255);
 
-    pathTrace(img, escena, 32);
+    pathTrace(img, escena, 128);
 
     generateBMP(img, "output.bmp");
 

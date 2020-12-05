@@ -3,6 +3,7 @@
 
 Plane::Plane(Direction normal, int distance){
     //nx*px + ny*py + nz*pz + d   0
+    this->myID = ++nextID;
     this->normal=normal;
     this->distanceToOrigin=distance;
 }
@@ -57,8 +58,10 @@ Direction Plane::getNormalAtPoint(Point p){
 
 int Plane::findIntersectionWithLine(Direction d, Point o, double result[]){
     int solutions = 1;
-    float num = -(distanceToOrigin + (o*normal));
-    float denom = d * normal;
+    //taking the absolute value on the denominator makes it so we can find the intersection regardless
+    //of the sense of the normal
+    float num = distanceToOrigin + (o*normal);
+    float denom = abs(d * normal);
     if(denom == 0 && num != 0){
         solutions = 0;
     }

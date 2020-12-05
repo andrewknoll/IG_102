@@ -17,6 +17,9 @@ Event Material::russianRoulette(){
         if(xi < eP[e]) break;
         e++;
     }
+    if(type==PLASTIC && e==REFRACTION){
+        cout <<"UMNUMUMNUUMNUNUNUMNUNUNNNMUNMNUNMUNUNNUNMUNMNUNUNUNNUMNUNMUNMNUNMUNMUNMNMNUNMUNMUNMNUMNUNUNUUUU" << endl;
+    }
     return e;
 }
 
@@ -28,10 +31,10 @@ double Material::getProb(Event e){
         refraction_coefficient.max()
     };
     if(e == ABSORTION){
-        p = 0.1;
+        p = 1 - maxK[0] - maxK[1] - maxK[2];
     }
     else{
-        p = maxK[e-1] / (maxK[0] + maxK[1] + maxK[2] + 0.1);
+        p = maxK[e-1];
     }
     return p;
 }
@@ -46,38 +49,62 @@ void Material::setAsLightSource(RGB emission){
 
 void Material::setAsDiffuse(RGB kl){
     emission.reset();
+    for(int i = 0; i < 3; i++){
+        if(kl.get(i) > 0.9){
+            kl.set(0.9, i);
+        }
+    }
     lambertian_coefficient = kl;
     specular_coefficient.reset();
     refraction_coefficient.reset();
     type = DIFFUSE;
 
-    eP[ABSORTION] = 0.1;
-    eP[DIFFUSE] = 1;
+    
+    eP[ABSORTION] = 1 - getProb(DIFFUSION);
+    eP[DIFFUSION] = 1;
 
 }
 
 void Material::setAsPlastic(RGB kl, RGB ks){
     emission.reset();
+    double sum;
+    for(int i = 0; i < 3; i++){
+        sum = kl.get(i) + ks.get(i);
+        //sum of kl and ks must be less than 0.9
+        if(sum > 0.9){
+            kl.set(kl.get(i)/sum * 0.9, i);
+            ks.set(ks.get(i)/sum * 0.9, i);
+        }
+    }
     lambertian_coefficient = kl;
     specular_coefficient = ks;
     refraction_coefficient.reset();
     type = PLASTIC;
 
-    eP[ABSORTION] = 0.1;
-    eP[DIFFUSE] = 0.1 + getProb(DIFFUSION);
+    eP[ABSORTION] = 1 - getProb(DIFFUSION) - getProb(SPECULAR);
+    eP[DIFFUSION] = eP[ABSORTION] + getProb(DIFFUSION);
     eP[SPECULAR] = 1;
 }
 
 void Material::setAsDielectric(RGB ks, RGB kt){
     emission.reset();
+    double sum;
+    for(int i = 0; i < 3; i++){
+        sum = ks.get(i) + kt.get(i);
+        //sum of ks and kt must be less than 0.9
+        if(sum > 0.9){
+            ks.set(ks.get(i)/sum * 0.9, i);
+            kt.set(kt.get(i)/sum * 0.9, i);
+        }
+    }
     lambertian_coefficient.reset();
     specular_coefficient = ks;
     refraction_coefficient = kt;
     type = DIELECTRIC;
 
-    eP[ABSORTION] = 0.1;
-    eP[DIFFUSE] = 0.1;
-    eP[SPECULAR] = 0.1 + getProb(SPECULAR);
+    eP[ABSORTION] = 1 - getProb(SPECULAR) - getProb(REFRACTION);
+    eP[DIFFUSION] = eP[ABSORTION];
+    eP[SPECULAR] = eP[ABSORTION] + getProb(SPECULAR);
     eP[REFRACTION] = 1;
 }
 
@@ -93,25 +120,54 @@ bool Material::is(MaterialType type){
     return this->type == type;
 }
 
-bool Material::calculateRayCollision(RGB& initial, Direction rayDirection, Direction& newDirection, Point collisionPoint, Direction surfaceNormal, Direction tangent1, Direction tangent2){
+RGB Material::getCoefficient(Event e){
+    RGB result;
+    if(e==DIFFUSION){
+        result = lambertian_coefficient;
+    } 
+    else if(e==SPECULAR){
+        result = specular_coefficient;
+    }
+    else if(e==REFRACTION){
+        result = refraction_coefficient;
+    }
+    return result;
+}
+
+Event Material::calculateRayCollision(RGB& initial, Direction rayDirection, Direction& newDirection, Point collisionPoint, Direction surfaceNormal, Direction tangent1, Direction tangent2, bool& init){
     double theta, phi;
-    bool finished = false;
+    Event e = NO_EVENT;
+    RGB factor;
     if(type == LIGHTSOURCE){
-        initial = initial * emission;
-        finished = true;
+        if(!init){
+            initial = emission;
+            init = true;
+        } 
+        else{
+            initial = initial * emission;
+        }
     }
     else{
-        Event e = russianRoulette();
-
-        initial = initial * lambertian_coefficient / getProb(e);
+        e = russianRoulette();
+        if(e!=ABSORTION){
+            factor = getCoefficient(e) / getProb(e);
+            if(!init){
+                initial = factor;
+                init = true;
+            } 
+            else{
+                initial = initial * factor;
+            }
+        }
 
         switch(e){
             case DIFFUSION:
                 getAnglesByCosineSampling(theta, phi);
                 newDirection = Direction(sin(theta)*cos(phi), sin(theta)*sin(phi), cos(theta));
+                newDirection = baseChangeInverse(newDirection, collisionPoint, tangent1, tangent2, surfaceNormal);
                 break;
             case SPECULAR:
-                newDirection = 2 * (rayDirection * surfaceNormal) * surfaceNormal - rayDirection;
+                newDirection = rayDirection - 2 * (rayDirection * surfaceNormal) * surfaceNormal;
                 break;
             case REFRACTION:{
                 float n;
@@ -126,11 +182,11 @@ bool Material::calculateRayCollision(RGB& initial, Direction rayDirection, Direc
                 newDirection = rayDirection * n + surfaceNormal * (n * (c) * sqrt(1 - n*n*(1-c*c)));
             }
                 break;
-            default:
-                finished = true;
-        }
 
-        newDirection = baseChange(newDirection, collisionPoint, tangent1, tangent2, surfaceNormal);
+            default:
+                break;
+        }
+        newDirection.normalize();
     }
-    return finished;
+    return e;
 }

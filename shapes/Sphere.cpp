@@ -2,6 +2,7 @@
 
 
 Sphere::Sphere(Direction axis, Point center){
+    this->myID = ++nextID;
     this->axis = axis;
     this->center = center;
 }

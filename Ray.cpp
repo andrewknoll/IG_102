@@ -20,31 +20,37 @@ int Ray::findIntersectionWith(ShapePtr shape, double solutions[]){
 
 
 RGB Ray::getRayResult(Scene& scene){
-    RGB result(1,1,1);
+    RGB result;
     double solutions[2];
     int nShapes = scene.length();
     int nIntersections = 0;
 
-    double minT = MAX_DOUBLE;
+    double minT;
 
-    ShapePtr closestShape = nullptr;
+    ShapePtr closestShape;
     ShapePtr shape;
+    ShapePtr lastShape = nullptr;
 
     Material material;
     Direction newDirection, t1, t2;
     Point intersection;
 
-    bool finished;
+    bool initialized = false;
+    Event lastEvent = NO_EVENT;
 
     do{
-        finished = false;
+        closestShape = nullptr;
+        minT = MAX_DOUBLE;
         for(int s = 0; s < nShapes; s++){ //Iterate through all shapes in scene
             shape = scene.getShape(s);
             nIntersections = findIntersectionWith(shape, solutions); //Find intersection with ray
                         
             for(int i = 0; i < nIntersections; i++){   //Loop through intersections
 
-                if(minT > solutions[i] && solutions[i] >= 0){    //If t is the smallest found AND object is not behind the camera
+                //If t is the smallest found AND object is not behind the camera
+                //AND the shape hasn't produced a reflection on the ray
+                if(minT > solutions[i] && solutions[i] > 0 
+                && (!areEqual(lastShape, shape) || lastEvent == REFRACTION || lastShape == nullptr)){    
                     minT = solutions[i];  //Update minimum distance
                     closestShape = shape;    //Update closest shape to camera
                 }
@@ -52,20 +58,25 @@ RGB Ray::getRayResult(Scene& scene){
         }
 
         if(closestShape != nullptr){    //If any intersection was found with ray
+            lastShape = closestShape;
             material = closestShape->getMaterial();
             intersection = minT * dir + origin;
             closestShape->calculateTangentsAtPoint(intersection, t1, t2);
-
-            finished = material.calculateRayCollision(result,
+            lastEvent = material.calculateRayCollision(result,
                                                       dir,
                                                       newDirection,
                                                       intersection,
                                                       closestShape->getNormalAtPoint(intersection),
                                                       t1,
-                                                      t2);
+                                                      t2,
+                                                      initialized);
+            setDirection(newDirection);
             setOrigin(intersection);
         }
-    }while(closestShape != nullptr && !finished);
-     //bounce when we have found something to bounce on, and we haven't found a light yet
+        else{
+            result = RGB(0, 0, 0);
+        }
+    }while(closestShape != nullptr && lastEvent != ABSORTION && !material.is(LIGHTSOURCE));
+    //bounce when we have found something to bounce on, and neither a light source was found nor the ray was absorbed
     return result;
 }

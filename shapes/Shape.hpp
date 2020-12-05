@@ -4,9 +4,12 @@
 #include "../color/RGB.hpp"
 #include "../materials/Material.hpp"
 #include "../vfield/Operations.hpp"
+#include <memory>
 
 class Shape{
     protected:
+        static long nextID;
+        long myID;
         Material material;
 
     public:
@@ -15,6 +18,10 @@ class Shape{
         virtual void calculateTangentsAtPoint(Point p, Direction& t1, Direction& t2)=0;
         Material getMaterial();
         void setMaterial(Material material);
+
+        friend bool areEqual(shared_ptr<Shape> p1, shared_ptr<Shape> p2);
 };
+
+bool areEqual(shared_ptr<Shape> p1, shared_ptr<Shape> p2);
 
 #endif

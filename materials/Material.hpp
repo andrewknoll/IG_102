@@ -13,7 +13,7 @@ enum MaterialType{
 };
 
 enum Event : int{
-    ABSORTION=0, DIFFUSION=1, SPECULAR=2, REFRACTION=3
+    NO_EVENT=-1, ABSORTION=0, DIFFUSION=1, SPECULAR=2, REFRACTION=3
 };
 
 Event& operator++(Event& e, int a);
@@ -47,7 +47,9 @@ class Material{
         
         bool is(MaterialType type);
 
-        bool calculateRayCollision(RGB& initial, Direction rayDirection, Direction& newDirection, Point collisionPoint, Direction surfaceNormal, Direction tangent1, Direction tangent2);
+        Event calculateRayCollision(RGB& initial, Direction rayDirection, Direction& newDirection, Point collisionPoint, Direction surfaceNormal, Direction tangent1, Direction tangent2, bool& init);
+
+        RGB getCoefficient(Event e);
 
         RGB render();
 
