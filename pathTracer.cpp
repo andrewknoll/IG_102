@@ -12,7 +12,7 @@ void pathTrace(Image& img, Scene scene, int rpp){
     Camera camera = scene.getCamera();
     Point o = camera.getOrigin();
     //Point target = scene.getTarget();
-    int nShapes = scene.length();
+    int nShapes = scene.shapeN();
     unsigned int iterationsNecessary = width * height * rpp * nShapes;
 
     unsigned currentIteration = 0;

@@ -35,6 +35,14 @@ void Scene::addShape(shared_ptr<Shape> s){
     objects.emplace_back(s);
 }
 
+void Scene::addLight(LightPoint lp){
+    lightPoints.emplace_back(lp);
+}
+
+void Scene::addLight(AreaLight al){
+    areaLights.emplace_back(al);
+}
+
 
 void Scene::buildCameraFromHFOV(float HFOV, Point target){
     Camera c(width, height, target, HFOV, true);
@@ -58,8 +66,24 @@ shared_ptr<Shape> Scene::getShape(int i){
     return static_pointer_cast<Shape>(objects[i]);
 }
 
-int Scene::length(){
+LightPoint Scene::getLightPoint(int i){
+    return lightPoints[i];
+}
+
+AreaLight Scene::getAreaLight(int i){
+    return areaLights[i];
+}
+
+int Scene::shapeN(){
     return objects.size();
+}
+
+int Scene::lightPN(){
+    return lightPoints.size();
+}
+
+int Scene::areaLightN(){
+    return areaLights.size();
 }
 
 ////////////////////////////////////////////////

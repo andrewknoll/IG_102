@@ -6,99 +6,12 @@
 #include "color/RGB.hpp"
 #include <math.h>
 #include "pathTracer.hpp"
+#include "LightPoint.hpp"
+#include "color/ImageWriter.hpp"
 #include <memory>
 
 
-#define BMP_HEADER_SIZE 14
-#define BMP_INFO_SIZE 40
-//(256 possible intensities for each RGB component)
-#define BMP_BITS_PER_PIXEL 24
-
-typedef unsigned char byte;
-
-//Writes size bytes of obj into fout
-template <typename T>
-void binWrite(ofstream& fout, T obj, int size = -1){
-    if(size == -1) size = sizeof(obj);
-    fout.write(reinterpret_cast<const char*>(&obj), size);
-}
-
-//Pointer Overload
-template <typename T>
-void binWrite(ofstream& fout, T* obj, int size = -1){
-    if(size == -1) size = sizeof(*obj);
-    fout.write(reinterpret_cast<const char*>(obj), size);
-}
-
-
-void generateBMP(Image& img, string output){
-
-    ofstream fout(output, ios::binary);
-
-    if(fout.is_open()){
-        cout << "Generating " << output << endl;
-        int width = img.getWidth();
-        int height = img.getHeight();
-
-        //FILE HEADER
-        binWrite(fout, "BM", 2);    //Signature
-        binWrite(fout, BMP_HEADER_SIZE + BMP_INFO_SIZE + width*height*3 + width*3 % 4 * height);   //FileSize (HEADER + INFO + PIXELS + PADDINGS)
-        binWrite(fout, 0); //Reserved
-        binWrite(fout, BMP_HEADER_SIZE + BMP_INFO_SIZE);    //DataOffset
-
-        //INFO HEADER
-        binWrite(fout, BMP_INFO_SIZE);  //Size (of Info Header)
-        binWrite(fout, width);  //Width
-        binWrite(fout, height); //Height
-        binWrite(fout, (short)1); //Number of planes
-        binWrite(fout, (short)BMP_BITS_PER_PIXEL);  //Bits per pixel 
-        binWrite(fout, 0); //Compression
-        binWrite(fout, 0); //ImageSize (if not compressed can be set to 0)
-        binWrite(fout, 0); //XpixelsPerM (can be set to 0 if no preference)
-        binWrite(fout, 0); //YpixelsPerM (can be set to 0 if no preference)
-        binWrite(fout, 1 << BMP_BITS_PER_PIXEL);  //color resolution (2^bits_per_pixel)
-        binWrite(fout, 0); //Important colors (0 = all)
-
-        //COLOR TABLE NOT NECESSARY FOR IMAGES OF MORE THAN 8 COLORS
-
-        cout << fixed << setprecision(2);
-        float red, green, blue;
-        byte redByte, greenByte, blueByte;
-        //PIXEL DATA (stored bottom to top)
-        for(int j = height -1; j >= 0; j--){
-            for(int i = 0; i < width; i++){
-                red = img.getTuple(i, j).get(0);
-                green = img.getTuple(i, j).get(1);
-                blue = img.getTuple(i, j).get(2);
-                
-                redByte = img.memoryToDisk(red);
-                greenByte = img.memoryToDisk(green);
-                blueByte = img.memoryToDisk(blue);
-
-                binWrite(fout, blueByte);   //blue
-                binWrite(fout, greenByte);  //green
-                binWrite(fout, redByte);    //red
-            }
-            for(int p = 0; p < (width*3) % 4; p++){ //each row of pixels must start in a 4-aligned value...
-            //...so we add padding each time the row doesn't end in a multiple of 4
-                binWrite(fout, (byte)0);
-            }
-            
-            cout << "\r " << flush;
-            cout << 100.0 * ((width-j)*height) / (width*height) << "%";
-        }
-        cout << "\r 100.00%" << endl;
-    }
-    else{
-        cerr << "Couldn't write on " << output << endl;
-    }
-
-    fout.close();
-}
-
-
-
-int main(){
+Scene scene1(){
     Direction a(0, 0, 25);
     Point p(0, 0, 70);
     Point point2(17, 0, 60);
@@ -114,6 +27,8 @@ int main(){
     RGB rgb5(0.25, 1, 0.16);
     RGB rgb3(1, 1, 1);
 
+    LightPoint lp(Point(0, 0, -7), RGB(3, 3, 3));
+
     Material diffuse;
     diffuse.setAsDiffuse(rgb);
 
@@ -126,8 +41,8 @@ int main(){
     Material emission;
     emission.setAsLightSource(rgb3);
 
-    Scene escena(400, 400);
-    escena.buildCameraFromVFOV(M_PI/2, o);
+    Scene scene(400, 400);
+    scene.buildCameraFromVFOV(M_PI/2, o);
 
     shared_ptr<Sphere> p1 = make_shared<Sphere>(a, p);
     shared_ptr<Plane> p2 = make_shared<Plane>(n, 1000);
@@ -139,18 +54,79 @@ int main(){
     p3->setMaterial(diffuse);
     p4->setMaterial(diffuse);
 
-    escena.addShape(p1);
-    //escena.addShape(p2);
-    escena.addShape(p3);
-    escena.addShape(p4);
+    scene.addShape(p1);
+    scene.addShape(p2);
+    scene.addShape(p3);
+    scene.addShape(p4);
+    scene.addLight(lp);
+
+    return scene;
+}
+
+Scene scene2(){
+    Scene scene(400, 400);
+    scene.buildCameraFromHFOV(M_PI/2, Point(0,0,0));
+
+    shared_ptr<Plane> floor = make_shared<Plane>(Direction(0, 1, 0), 10);
+    AreaLight ceiling(Point(0, -10, 0), Direction(1,0,0), Direction(0,0,1), 30, 10, RGB(1,1,1));
+    shared_ptr<Plane> redWall = make_shared<Plane>(Direction(-1, 0, 0), 10);
+    shared_ptr<Plane> greenWall = make_shared<Plane>(Direction(1, 0, 0), 10);
+    shared_ptr<Plane> whiteWall = make_shared<Plane>(Direction(0, 0, 1), 14);
+    shared_ptr<Sphere> plasticSphere = make_shared<Sphere>(Direction(0, 0, 4), Point(3.5, 8, 10));
+    shared_ptr<Sphere> specularSphere = make_shared<Sphere>(Direction(0, 0, 4), Point(-4, 8, 13));
+
+    Material emission;
+    emission.setAsLightSource(RGB(1,1,1));
+
+    Material emission2;
+    emission2.setAsLightSource(RGB(1,0,0));
+    Material emission3;
+    emission3.setAsLightSource(RGB(0,1,0));
+    Material emission4;
+    emission4.setAsLightSource(RGB(0,0,1));
+
+    Material diffuseWhite;
+    diffuseWhite.setAsDiffuse(RGB(1, 1, 1));
+
+    Material diffuseRed;
+    diffuseRed.setAsDiffuse(RGB(1, 0, 0));
+
+    Material diffuseGreen;
+    diffuseGreen.setAsDiffuse(RGB(0, 1, 0));
+
+    Material plastic;
+    plastic.setAsPlastic(RGB(1, 0, 0), RGB(1, 0, 0));
+
+    Material dielectric;
+    dielectric.setAsDielectric(RGB(1,1,1), RGB(1,1,1));
+    
+    floor->setMaterial(diffuseWhite);
+    plasticSphere->setMaterial(plastic);
+    specularSphere->setMaterial(dielectric);
+    whiteWall->setMaterial(diffuseWhite);
+    redWall->setMaterial(diffuseRed);
+    greenWall->setMaterial(diffuseGreen);
+
+    scene.addShape(floor);
+    scene.addShape(plasticSphere);
+    scene.addShape(specularSphere);
+    scene.addShape(whiteWall);
+    scene.addShape(redWall);
+    scene.addShape(greenWall);
+    scene.addLight(ceiling);
+    
+    return scene;
+}
+
+int main(){
 
     Image img;
     img.setWidthHeight(400, 400);
-    img.test(1, 255);
 
-    pathTrace(img, escena, 128);
+    pathTrace(img, scene2(), 128);
 
-    generateBMP(img, "output.bmp");
+    float args[2] = {img.getMax(), 2};
+    writeImage(img, "output.bmp", GAMMA, 255, true, args);
 
     
 }

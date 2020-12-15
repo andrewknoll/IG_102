@@ -48,12 +48,19 @@ int Image::getColorRes(){
     return colorRes;
 }
 
+void Image::setDestinationResolution(int cr){
+    destinationCR = cr;
+}
+
 RGB Image::getTuple(int i, int j){
     return m[i][j];
 }
 
 void Image::setTuple(RGB color, int i, int j){
     m[i][j] = color;
+    if(maxFound < color.max()){
+        maxFound = color.max();
+    }
 }
 
 float Image::parseComment(string s){
@@ -71,13 +78,8 @@ float Image::diskToMemory(int i){
     return i * max/colorRes;
 }
 
-void Image::test(int m, int c){
-    colorRes = c;
-    maxAfterMapping = m;
-}
-
 int Image::memoryToDisk(float f){
-    int aux = round(f * LDR_RES/maxAfterMapping);
+    int aux = round(f * destinationCR/maxAfterMapping);
     return aux;
 }
 

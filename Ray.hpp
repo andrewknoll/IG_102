@@ -6,6 +6,7 @@
 #include "shapes/Shape.hpp"
 #include "materials/Material.hpp"
 #include "Scene.hpp"
+#include "AreaLight.hpp"
 
 
 using ShapePtr = shared_ptr<Shape>;
@@ -26,6 +27,8 @@ class Ray{
 
         int findIntersectionWith(ShapePtr shape, double solutions[]);
         RGB getRayResult(Scene& scene);
+        Event getShadowRayResult(Scene& scene, RGB& initial, LightPoint destination, ShapePtr lastShape);
+        Event castShadowRays(Scene& scene, RGB& initial, Point origin, ShapePtr lastShape);
 };
 
 #endif

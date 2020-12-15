@@ -64,7 +64,7 @@ float RGB::max(){
 }
 
 RGB calculateRGBMean(vector<RGB> v){
-    float results[3];
+    float results[3] = {0, 0, 0};
     int size = v.size();
     for(int i = 0; i < size; i++){
         for(int c = 0; c < 3; c++){
@@ -74,8 +74,13 @@ RGB calculateRGBMean(vector<RGB> v){
     return RGB(results[0] / size, results[1] / size, results[2] / size);
 }
 
+//operator used for coefficient sums
+RGB RGB::operator+(RGB b){
+    return RGB(get(0)+b.get(0), get(1)+b.get(1), get(2)+b.get(2));
+}
+
 //operator used for coefficient products
-RGB RGB::operator*(RGB&b){
+RGB RGB::operator*(RGB b){
     return RGB(get(0)*b.get(0), get(1)*b.get(1), get(2)*b.get(2));
 }
 

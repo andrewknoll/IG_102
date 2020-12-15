@@ -5,6 +5,8 @@
 #include "vfield/Point.hpp"
 #include "shapes/Shape.hpp"
 #include "Camera.hpp"
+#include "LightPoint.hpp"
+#include "AreaLight.hpp"
 #include <memory>
 
 #include <vector>
@@ -15,6 +17,8 @@ class Scene{
     private:
         int height, width; // Size (in pixels) of the projection plane
         vector<shared_ptr<Shape> > objects; // Geometries which compose the scene
+        vector<LightPoint> lightPoints;
+        vector<AreaLight> areaLights; 
         Camera camera;
 
     public:
@@ -33,9 +37,15 @@ class Scene{
         Camera getCamera();
 
         void addShape(shared_ptr<Shape> s);
+        void addLight(LightPoint lp);
+        void addLight(AreaLight al);
 
         shared_ptr<Shape> getShape(int i);
-        int length();
+        LightPoint getLightPoint(int i);
+        AreaLight getAreaLight(int i);
+        int shapeN();
+        int lightPN();
+        int areaLightN();
         
 };
 

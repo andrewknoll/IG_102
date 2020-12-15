@@ -17,9 +17,6 @@ Event Material::russianRoulette(){
         if(xi < eP[e]) break;
         e++;
     }
-    if(type==PLASTIC && e==REFRACTION){
-        cout <<"UMNUMUMNUUMNUNUNUMNUNUNNNMUNMNUNMUNUNNUNMUNMNUNUNUNNUMNUNMUNMNUNMUNMUNMNMNUNMUNMUNMNUMNUNUNUUUU" << endl;
-    }
     return e;
 }
 
@@ -134,29 +131,24 @@ RGB Material::getCoefficient(Event e){
     return result;
 }
 
-Event Material::calculateRayCollision(RGB& initial, Direction rayDirection, Direction& newDirection, Point collisionPoint, Direction surfaceNormal, Direction tangent1, Direction tangent2, bool& init){
+Event Material::calculateRayCollision(RGB& factor, RGB& indirectLight, Direction rayDirection, Direction& newDirection, Point collisionPoint, Direction surfaceNormal, Direction tangent1, Direction tangent2, bool& init){
     double theta, phi;
     Event e = NO_EVENT;
-    RGB factor;
+    RGB operand;
     if(type == LIGHTSOURCE){
-        if(!init){
-            initial = emission;
-            init = true;
-        } 
-        else{
-            initial = initial * emission;
-        }
+        indirectLight = emission;
+        e = LIGHTFOUND;
     }
     else{
         e = russianRoulette();
         if(e!=ABSORTION){
-            factor = getCoefficient(e) / getProb(e);
+            operand = getCoefficient(e) / getProb(e);
             if(!init){
-                initial = factor;
+                factor = operand;
                 init = true;
             } 
             else{
-                initial = initial * factor;
+                factor = factor * operand;
             }
         }
 

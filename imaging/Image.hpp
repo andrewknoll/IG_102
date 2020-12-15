@@ -22,7 +22,7 @@ class Image{
         string format;
         int width, height;
         float max = 1.0; 
-        int colorRes;
+        int colorRes, destinationCR = 255;
 
         float maxFound = 0.0;
         float maxAfterMapping = 0.0;
@@ -36,7 +36,6 @@ class Image{
         shared_ptr<ToneMapper> tm;
 
     public:
-        void test(int m, int c);
         void setWidthHeight(int width, int height);
         int memoryToDisk(float f);
         string getFormat();
@@ -49,6 +48,7 @@ class Image{
         float getMaxFound();
 
         int getColorRes();
+        void setDestinationResolution(int cr);
 
         void setMaxAfterMapping(float n);
         float getMaxAfterMapping();

@@ -202,3 +202,15 @@ void getAnglesByCosineSampling(double& inclination, double& azimuth){
 float findAngle(Direction a, Direction b){
     return acos((a * b)/(a.modulus() * b.modulus()));
 }
+
+float solvePlaneLineIntersectionFromNormalAndPoint(Direction normal, Point origin, Direction lineDir, Point lineOrigin){
+    float D = -(normal['x'] * origin['x'] + normal['y'] * origin['y'] + normal['z'] * origin['z']);
+
+    float num = 0;
+    float denum = 0;
+    for(int i = 0; i < 3; i++){
+        num += -normal[i]*lineOrigin[i];
+        denum += normal[i]*lineDir[i];
+    }
+    return (num - D)/denum;
+}

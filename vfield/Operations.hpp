@@ -70,4 +70,6 @@ float distance(Point a, Point b);
 void getAnglesByCosineSampling(double& inclination, double& azimuth);
 float findAngle(Direction a, Direction b);
 
+float solvePlaneLineIntersectionFromNormalAndPoint(Direction normal, Point origin, Direction lineDir, Point lineOrigin);
+
 #endif
