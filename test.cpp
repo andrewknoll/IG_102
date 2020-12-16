@@ -66,7 +66,7 @@ Scene scene1(){
 Scene scene2(){
     Scene scene(400, 400);
     scene.buildCameraFromHFOV(M_PI/2, Point(0,0,0));
-
+    //TODO: COMPROBAR QUE UP VA HACIA ARRIBA XD
     shared_ptr<Plane> floor = make_shared<Plane>(Direction(0, 1, 0), 10);
     AreaLight ceiling(Point(0, -10, 0), Direction(1,0,0), Direction(0,0,1), 30, 10, RGB(1,1,1));
     shared_ptr<Plane> redWall = make_shared<Plane>(Direction(-1, 0, 0), 10);
@@ -74,7 +74,7 @@ Scene scene2(){
     shared_ptr<Plane> whiteWall = make_shared<Plane>(Direction(0, 0, 1), 14);
     shared_ptr<Sphere> plasticSphere = make_shared<Sphere>(Direction(0, 0, 4), Point(3.5, 8, 10));
     shared_ptr<Sphere> specularSphere = make_shared<Sphere>(Direction(0, 0, 4), Point(-4, 8, 13));
-
+    /*
     Material emission;
     emission.setAsLightSource(RGB(1,1,1));
 
@@ -84,7 +84,7 @@ Scene scene2(){
     emission3.setAsLightSource(RGB(0,1,0));
     Material emission4;
     emission4.setAsLightSource(RGB(0,0,1));
-
+    */
     Material diffuseWhite;
     diffuseWhite.setAsDiffuse(RGB(1, 1, 1));
 
@@ -123,9 +123,9 @@ int main(){
     Image img;
     img.setWidthHeight(400, 400);
 
-    pathTrace(img, scene2(), 128);
+    pathTrace(img, scene2(), 32);
 
-    float args[2] = {img.getMax(), 2};
+    float args[2] = {img.getMax(), 0.7};
     writeImage(img, "output.bmp", GAMMA, 255, true, args);
 
     

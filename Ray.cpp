@@ -150,9 +150,7 @@ RGB Ray::getRayResult(Scene& scene){
                 }
             }
             else if(lastEvent == DIFFUSION && shadowEvent == LIGHTFOUND){
-                if(shadowEvent == LIGHTFOUND){
-                    factor = factor * directLight;
-                }
+                factor = factor * directLight;
             }
         }
         else{
