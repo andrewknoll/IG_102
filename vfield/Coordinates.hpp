@@ -33,6 +33,8 @@ class Coordinates{
         virtual float& operator[](char c);
         virtual float  operator[](char c) const;
 
+        bool isNull();
+
         virtual Coordinates operator* (Matrix4 m) const;
 };
 

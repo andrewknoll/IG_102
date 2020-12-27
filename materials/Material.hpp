@@ -13,7 +13,7 @@ enum MaterialType{
 };
 
 enum Event : int{
-    NO_EVENT=-1, ABSORTION=0, DIFFUSION=1, SPECULAR=2, REFRACTION=3, LIGHTFOUND=4
+    NO_EVENT=-1, ABSORPTION=0, DIFFUSION=1, SPECULAR=2, REFRACTION=3, LIGHTFOUND=4
 };
 
 Event& operator++(Event& e, int a);
@@ -31,7 +31,7 @@ class Material{
         //cumulative probability of events
         double eP[N_EVENTS] = {1, 1, 1, 1};
 
-        Event russianRoulette();
+        Event russianRoulette(bool firstTime);
         double getProb(Event e);
 
     public:

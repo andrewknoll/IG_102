@@ -19,7 +19,6 @@ class Ray{
     private:
         Point origin;
         Direction dir;
-
     public:
         Direction getDirection();
         void setDirection(Direction dir);

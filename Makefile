@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -std=c++11 -ggdb
+CFLAGS=-Wall -ggdb -std=c++11
 img=Image
 imgDir=imaging
 colorDir=color

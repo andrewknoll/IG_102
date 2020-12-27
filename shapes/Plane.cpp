@@ -59,7 +59,7 @@ Direction Plane::getNormalAtPoint(Point p){
 
 int Plane::findIntersectionWithLine(Direction d, Point o, double result[]){
     int solutions = 1;
-    float num = distanceToOrigin + abs(o*normal);
+    float num = distanceToOrigin + o*normal;
     float denom = d * normal;
     if(denom == 0 && num != 0){
         solutions = 0;
@@ -68,7 +68,7 @@ int Plane::findIntersectionWithLine(Direction d, Point o, double result[]){
         result[0] = 0;
     }
     else{
-        result[0] = num/denom;
+        result[0] = -num/denom;
     }
     return solutions;
 }

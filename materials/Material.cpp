@@ -9,14 +9,18 @@ Event& operator++(Event& e, int a){
     return e = (Event)((int)e + 1);
 }
 
-Event Material::russianRoulette(){
+Event Material::russianRoulette(bool firstTime){
     double xi = rng.getNumber(0, 1);
-    Event e = ABSORTION;
+    Event e = ABSORPTION;
+    /*if(eP[0] != 1 && firstTime){
+        e++;
+    }*/
     while(e < N_EVENTS){
         //if the random number falls in the range of event e, we return that event e
         if(xi < eP[e]) break;
         e++;
     }
+
     return e;
 }
 
@@ -27,7 +31,7 @@ double Material::getProb(Event e){
         specular_coefficient.max(),
         refraction_coefficient.max()
     };
-    if(e == ABSORTION){
+    if(e == ABSORPTION){
         p = 1 - maxK[0] - maxK[1] - maxK[2];
     }
     else{
@@ -57,7 +61,7 @@ void Material::setAsDiffuse(RGB kl){
     type = DIFFUSE;
 
     
-    eP[ABSORTION] = 1 - getProb(DIFFUSION);
+    eP[ABSORPTION] = 1 - getProb(DIFFUSION);
     eP[DIFFUSION] = 1;
 
 }
@@ -78,8 +82,8 @@ void Material::setAsPlastic(RGB kl, RGB ks){
     refraction_coefficient.reset();
     type = PLASTIC;
 
-    eP[ABSORTION] = 1 - getProb(DIFFUSION) - getProb(SPECULAR);
-    eP[DIFFUSION] = eP[ABSORTION] + getProb(DIFFUSION);
+    eP[ABSORPTION] = 1 - getProb(DIFFUSION) - getProb(SPECULAR);
+    eP[DIFFUSION] = eP[ABSORPTION] + getProb(DIFFUSION);
     eP[SPECULAR] = 1;
 }
 
@@ -99,9 +103,9 @@ void Material::setAsDielectric(RGB ks, RGB kt){
     refraction_coefficient = kt;
     type = DIELECTRIC;
 
-    eP[ABSORTION] = 1 - getProb(SPECULAR) - getProb(REFRACTION);
-    eP[DIFFUSION] = eP[ABSORTION];
-    eP[SPECULAR] = eP[ABSORTION] + getProb(SPECULAR);
+    eP[ABSORPTION] = 1 - getProb(SPECULAR) - getProb(REFRACTION);
+    eP[DIFFUSION] = eP[ABSORPTION];
+    eP[SPECULAR] = eP[ABSORPTION] + getProb(SPECULAR);
     eP[REFRACTION] = 1;
 }
 
@@ -140,8 +144,8 @@ Event Material::calculateRayCollision(RGB& factor, RGB& indirectLight, Direction
         e = LIGHTFOUND;
     }
     else{
-        e = russianRoulette();
-        if(e!=ABSORTION){
+        e = russianRoulette(init);
+        if(e!=ABSORPTION){
             operand = getCoefficient(e) / getProb(e);
             if(!init){
                 factor = operand;

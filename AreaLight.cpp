@@ -45,6 +45,7 @@ Direction AreaLight::getHeight(){
 }
 
 int AreaLight::findIntersectionWithLine(Direction d, Point o, double result[]){
+    
     int solutions = 0;
     Direction normal = cross(base, height);
 
@@ -65,15 +66,15 @@ int AreaLight::findIntersectionWithLine(Direction d, Point o, double result[]){
         j++;
     }
     int k = 3 -i -j;
-
-    float v = (intersection[j]*base[i] - origin[j]*base[i] - intersection[i] + origin[i])/(base[i]*height[j] - height[i]);
+    //We ♥ WolframAlpha
+    float v = (intersection[j]*base[i] - origin[j]*base[i] + base[j]*origin[j] - base[j]*intersection[i])/(base[i]*height[j] - base[j]*height[i]);
     float u = (intersection[i] - origin[i] - v*height[i])/base[i];
 
-    if((intersection[k] - origin[k] - u*base[k] - v*height[k]) < 0.0001){
-        if(abs(u) <= boundU && abs(v) <= boundV && t >=0){
+    //if((intersection[k] - origin[k] - u*base[k] - v*height[k]) < 0.1){
+        if(abs(u) <= boundU && abs(v) <= boundV){ //Perhaps should be check that it isn't behind the origin. "t <= 0" at the moment DOESN'T WORK
             result[0] = t;
             solutions = 1;
         }
-    }
+    //}
     return solutions;
 }
