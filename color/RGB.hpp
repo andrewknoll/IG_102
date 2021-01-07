@@ -21,8 +21,8 @@ class RGB{
         float max();
         RGB operator+(RGB b);
         RGB operator*(RGB b);
-        RGB operator*(double b);
-        RGB operator/(double b);
+        RGB operator*(float b);
+        RGB operator/(float b);
 };
 
 RGB calculateRGBMean(vector<RGB> v);

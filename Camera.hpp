@@ -16,15 +16,15 @@ class Camera{
 
     public:
         Camera();
-        Camera(int width, int height, Point target, double FOV, bool hfov);
+        Camera(int width, int height, Point target, float FOV, bool hfov);
         Camera(Direction u, Direction l, Direction f, Point o);
         void setOrigin(Point p);
         void setResolution(int h, int w);
         void setCoord(Direction u, Direction l, Direction f);
 
         void setAspectRatio(int width, int height);
-        void setHFOV(double fov);
-        void setVFOV(double fov);
+        void setHFOV(float fov);
+        void setVFOV(float fov);
 
         Direction getUp();
         Direction getLeft();

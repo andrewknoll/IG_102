@@ -12,7 +12,7 @@
 using ShapePtr = shared_ptr<Shape>;
 using namespace std;
 
-const double MAX_DOUBLE = numeric_limits<double>::max();
+const float MAX_float = numeric_limits<float>::max();
 
 
 class Ray{
@@ -24,7 +24,7 @@ class Ray{
         void setDirection(Direction dir);
         void setOrigin(Point origin);
 
-        int findIntersectionWith(ShapePtr shape, double solutions[]);
+        int findIntersectionWith(ShapePtr shape, float solutions[]);
         RGB getRayResult(Scene& scene);
         Event getShadowRayResult(Scene& scene, RGB& initial, LightPoint destination, ShapePtr lastShape);
         Event castShadowRays(Scene& scene, RGB& initial, Point origin, ShapePtr lastShape);

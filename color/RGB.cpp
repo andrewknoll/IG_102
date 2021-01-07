@@ -85,11 +85,11 @@ RGB RGB::operator*(RGB b){
 }
 
 //operator used for coefficient products
-RGB RGB::operator*(double b){
+RGB RGB::operator*(float b){
     return RGB(get(0)*b, get(1)*b, get(2)*b);
 }
 
 //operator used for coefficient products
-RGB RGB::operator/(double b){
+RGB RGB::operator/(float b){
     return RGB(get(0)/b, get(1)/b, get(2)/b);
 }

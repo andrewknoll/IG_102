@@ -6,6 +6,7 @@ Plane::Plane(Direction normal, int distance){
     this->myID = ++nextID;
     this->distanceToOrigin=distance;
     this->normal=normal;
+    this->normal.normalize();
     
 }
 
@@ -57,7 +58,7 @@ Direction Plane::getNormalAtPoint(Point p){
     return normal;
 }
 
-int Plane::findIntersectionWithLine(Direction d, Point o, double result[]){
+int Plane::findIntersectionWithLine(Direction d, Point o, float result[]){
     int solutions = 1;
     float num = distanceToOrigin + o*normal;
     float denom = d * normal;

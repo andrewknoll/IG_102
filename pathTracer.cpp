@@ -55,7 +55,7 @@ void pathTrace(Image& img, Scene scene, int rpp){
                      *          image[i, j] = projectionPlane[2i/nx -1, -2j/ny +1]
                      *          we will also add a random factor for antialias            
                      */
-                    if(i==114 && j==59){
+                    if(i==100 && j==238){
                         cout << "conio" << endl;
                     }
                     d.setAll((2*i + rng.getNumber(0,1))/width - 1 , (-2*j + rng.getNumber(0,1))/height +1 , 1);

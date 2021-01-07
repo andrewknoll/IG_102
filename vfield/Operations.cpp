@@ -179,8 +179,8 @@ Coordinates baseChangeInverse(Coordinates& coord, const Point o, const Direction
     return baseChangeGenericInverse(coord, o, u, v, w);
 }
 
-bool solveQuadraticEquation(double a, double b, double c, double results[2]){
-    double insideSquareRoot = b*b - 4*a*c;
+bool solveQuadraticEquation(float a, float b, float c, float results[2]){
+    float insideSquareRoot = b*b - 4*a*c;
     bool isReal = (insideSquareRoot >= 0);
     if(isReal){
         results[0] = (-b + sqrt(insideSquareRoot))/(2*a);
@@ -194,8 +194,8 @@ float distance(Point a, Point b){
     return (b - a).modulus();
 }
 
-void getAnglesByCosineSampling(double& inclination, double& azimuth){
-    inclination = acos(sqrt(1 - rng.getNumber(0,1)));
+void getAnglesByCosineSampling(float& inclination, float& azimuth){
+    inclination = acosf(sqrt(1 - rng.getNumber(0,1)));
     azimuth = 2.0 * M_PI * rng.getNumber(0,1);
 }
 

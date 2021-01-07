@@ -64,10 +64,10 @@ Point baseChangeInverse(Point& coord, const Point o, const Direction u, const Di
 Direction baseChangeInverse(Direction& coord, const Point o, const Direction u, const Direction v, const Direction w);
 Coordinates baseChangeInverse(Coordinates& coord, const Point o, const Direction u, const Direction v, const Direction w);
 
-bool solveQuadraticEquation(double a, double b, double c, double results[2]);
+bool solveQuadraticEquation(float a, float b, float c, float results[2]);
 float distance(Point a, Point b);
 
-void getAnglesByCosineSampling(double& inclination, double& azimuth);
+void getAnglesByCosineSampling(float& inclination, float& azimuth);
 float findAngle(Direction a, Direction b);
 
 float solvePlaneLineIntersectionFromNormalAndPoint(Direction normal, Point origin, Direction lineDir, Point lineOrigin);

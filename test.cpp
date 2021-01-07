@@ -96,8 +96,8 @@ Scene scene2(){
     ceiling->setMaterial(diffuseWhite);
 
     scene.addShape(floor);
-    //scene.addShape(plasticSphere);
-    //scene.addShape(specularSphere);
+    scene.addShape(plasticSphere);
+    scene.addShape(specularSphere);
     scene.addShape(whiteWall);
     scene.addShape(redWall);
     scene.addShape(greenWall);
@@ -111,23 +111,14 @@ Scene scene3(){
     Scene scene(400, 400);
     scene.buildCameraFromHFOV(2*M_PI/5, Point(0,0,-3));
 
-    shared_ptr<Plane> floor = make_shared<Plane>(Direction(0.25, -1, 0.8), 10);
+    shared_ptr<Plane> floor = make_shared<Plane>(Direction(2, 2, -5), 27);
     shared_ptr<Sphere> sphere1 = make_shared<Sphere>(Direction(2, 0, 0), Point(-2, -1, 2));
     shared_ptr<Sphere> sphere2 = make_shared<Sphere>(Direction(0, 3, 0), Point(0, -0.5, 4));
     shared_ptr<Sphere> sphere3 = make_shared<Sphere>(Direction(0, 0, 1), Point(3, -0.75, 5));
     LightPoint lp(Point(-2, 2, -7), RGB(100, 100, 100));
 
-    /*Material plastic1;
-    plastic1.setAsPlastic(RGB(0.1,0.1,0.5), RGB(0.2,0.2,1));
-    Material plastic2;
-    plastic2.setAsPlastic(RGB(0.5,0.05,0.05), RGB(0.5,0.05,0.05));
-    Material plastic3;
-    plastic3.setAsPlastic(RGB(0.5,0.5,0.05), RGB(0.5,0.5,0.05));
-    Material plastic4;
-    plastic4.setAsPlastic(RGB(0.2,0.2,0.5), RGB(0.2,0.2,0.5));*/
-
     Material plastic1;
-    plastic1.setAsPlastic(RGB(0.1,0.1,0.5), RGB(0.2,0.2,1));
+    plastic1.setAsPlastic(RGB(0.1,0.5,0.5), RGB(0.2,0.2,1));
     Material plastic2;
     plastic2.setAsPlastic(RGB(0.5,0.05,0.05), RGB(0.5,0.05,0.05));
     Material plastic3;
@@ -155,9 +146,9 @@ int main(){
     Image img;
     img.setWidthHeight(400, 400);
 
-    pathTrace(img, scene2(), 16);
+    pathTrace(img, scene2(), 64);
 
-    float args[2] = {img.getMax(), 0.7};
+    float args[2] = {img.getMax(), 0.95};
     writeImage(img, "output.bmp", GAMMA, 255, true, args);
 
     

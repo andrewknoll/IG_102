@@ -26,9 +26,9 @@ void Sphere::calculateTangentsAtPoint(Point p, Direction& t1, Direction& t2){
     t2.normalize();
 }
 
-int Sphere::findIntersectionWithLine(Direction d, Point o, double result[]){
-    double roots[2];
-    double a, b, c, r;
+int Sphere::findIntersectionWithLine(Direction d, Point o, float result[]){
+    float roots[2];
+    float a, b, c, r;
     Point aux;
     bool isReal;
     int intersections = 0;

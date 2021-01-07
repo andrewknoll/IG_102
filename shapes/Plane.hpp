@@ -15,7 +15,7 @@ class Plane : public Shape{
     public:
         Plane(Direction normal, int distance);
         void setAll(float coord[3], int distance);
-        int findIntersectionWithLine(Direction d, Point o, double result[]);
+        int findIntersectionWithLine(Direction d, Point o, float result[]);
         Direction getNormalAtPoint(Point p);
         void calculateTangentsAtPoint(Point p, Direction& t1, Direction& t2);
 

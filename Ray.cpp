@@ -1,5 +1,6 @@
 #include "Ray.hpp"
 
+#define EPSILON 0.001
 
 Direction Ray::getDirection(){
     return this->dir;
@@ -14,19 +15,19 @@ void Ray::setOrigin(Point origin){
 }
 
 
-int Ray::findIntersectionWith(ShapePtr shape, double solutions[]){
+int Ray::findIntersectionWith(ShapePtr shape, float solutions[]){
     return shape->findIntersectionWithLine(dir, origin, solutions);
 }
 
 Event Ray::getShadowRayResult(Scene& scene, RGB& light, LightPoint destination, ShapePtr lastShape){
     ShapePtr closestShape = nullptr;
     ShapePtr shape;
-    double solutions[2];
+    float solutions[2];
 
     int nShapes = scene.shapeN();
     bool foundObstacle = false;
     int nIntersections;
-    float dist = distance(this->origin, destination.getLocalization());
+    float dist = distance(origin, destination.getLocalization());
     
     for(int s = 0; s < nShapes && !foundObstacle; s++){ //Iterate through all shapes in scene
         shape = scene.getShape(s);
@@ -36,11 +37,11 @@ Event Ray::getShadowRayResult(Scene& scene, RGB& light, LightPoint destination, 
 
             //foundObstacle = there was something in a distance smaller or equal to the distance to the destination,
             //and larger than 0, and the collision wasn't produced with the same shape it originated
-            foundObstacle |= (dist >= solutions[i] && solutions[i] >= 0 && (!areEqual(lastShape, shape) || lastShape == nullptr));
+            foundObstacle |= (dist >= solutions[i] && solutions[i] >= EPSILON);
         }
     }
     if(!foundObstacle){
-        light = light + destination.getEmission() * abs(lastShape->getNormalAtPoint(this->origin) * this->dir) / (dist * dist);
+        light = light + destination.getEmission() * max(lastShape->getNormalAtPoint(this->origin) * this->dir, 0.0f) * lastShape->getMaterial().getCoefficient(DIFFUSION) / (dist * dist * M_PI);
     }
     return foundObstacle ? NO_EVENT : LIGHTFOUND;
 }
@@ -63,13 +64,13 @@ Event Ray::castShadowRays(Scene& scene, RGB& light, Point origin, ShapePtr lastS
 
 
 RGB Ray::getRayResult(Scene& scene){
-    RGB result, factor, indirectLight, directLight;
-    double solutions[2];
+    RGB result= RGB(0,0,0), factor = RGB(1,1,1), indirectLight= RGB(0,0,0), directLight = RGB(0,0,0), directBounce= RGB(0,0,0), preFactor= RGB(1,1,1);
+    float solutions[2];
     int nShapes = scene.shapeN();
     int nAreaLights = scene.areaLightN();
     int nIntersections = 0;
 
-    double minT;
+    float minT;
     bool foundAreaLight = false;
 
     ShapePtr closestShape;
@@ -88,8 +89,9 @@ RGB Ray::getRayResult(Scene& scene){
     Event lastEvent = NO_EVENT, shadowEvent = NO_EVENT;
 
     do{
+        preFactor = factor;
         closestShape = nullptr;
-        minT = MAX_DOUBLE;
+        minT = MAX_float;
         for(int s = 0; s < nShapes; s++){ //Iterate through all shapes in scene
             shape = scene.getShape(s);
             nIntersections = findIntersectionWith(shape, solutions); //Find intersection with ray
@@ -98,8 +100,7 @@ RGB Ray::getRayResult(Scene& scene){
 
                 //If t is the smallest found AND object is not behind the origin
                 //AND the shape hasn't produced a reflection on the ray
-                if(minT > solutions[i] && solutions[i] >= 0 
-                && (!areEqual(lastShape, shape) || lastEvent == REFRACTION || lastShape == nullptr)){    
+                if(minT > solutions[i] && solutions[i] >= EPSILON){
                     minT = solutions[i];  //Update minimum distance
                     closestShape = shape;    //Update closest shape
                 }
@@ -146,26 +147,32 @@ RGB Ray::getRayResult(Scene& scene){
                                                       initialized);
             setDirection(newDirection);
             setOrigin(intersection);
+
             if(lastEvent == DIFFUSION){
-                shadowEvent = castShadowRays(scene, directLight, intersection, lastShape);
+                shadowEvent = castShadowRays(scene, directBounce, intersection, lastShape);
+                if(initialized){
+                    directLight = directLight + preFactor * directBounce;
+                }
+                else{
+                    directLight = directLight + directBounce;
+                }
             }
-        }
-        if(lastEvent != ABSORPTION && lastEvent != LIGHTFOUND && shadowEvent != LIGHTFOUND){
-            //Not absorbed, not found any kind of light
-            result = RGB(0, 0, 0);
-        }
-        else if(lastEvent != ABSORPTION){
-            //lastEvent == LIGHTFOUND || shadowEvent == LIGHTFOUND
-            if(initialized){
-                result = factor * (indirectLight+directLight);
-            }
-            else{
-                factor = indirectLight + directLight;
-                result = factor;
-                initialized = true;
-            }
+            
         }
     }while(closestShape != nullptr && lastEvent != ABSORPTION && lastEvent != LIGHTFOUND);
     //bounce when we have found something to bounce on, and neither a light source was found nor the ray was absorbed
+
+    if(lastEvent == LIGHTFOUND){
+        if(initialized){
+            result = factor * indirectLight + directLight;
+        }
+        else{
+            result = indirectLight + directLight;
+        }
+    }
+    else{
+        result = directLight;
+    }
+    
     return result;
 }

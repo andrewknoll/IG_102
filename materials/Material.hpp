@@ -29,10 +29,10 @@ class Material{
         MaterialType type;
 
         //cumulative probability of events
-        double eP[N_EVENTS] = {1, 1, 1, 1};
+        float eP[N_EVENTS] = {1, 1, 1, 1};
 
         Event russianRoulette(bool firstTime);
-        double getProb(Event e);
+        float getProb(Event e);
 
     public:
         Material();

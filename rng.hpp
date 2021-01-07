@@ -8,8 +8,8 @@ using namespace std;
 struct{
     default_random_engine re;
 
-    double getNumber(double min, double max){
-        uniform_real_distribution<double> unif{min, max};
+    float getNumber(float min, float max){
+        uniform_real_distribution<float> unif{min, max};
         return unif(re);
     }
 } rng;

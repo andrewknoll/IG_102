@@ -9,7 +9,7 @@ Camera::Camera(){
     this->origin=o;
 }
 
-Camera::Camera(int width, int height, Point target, double FOV, bool hfov){
+Camera::Camera(int width, int height, Point target, float FOV, bool hfov){
     Direction u(0,1,0), l(1,0,0), f(0,0,1);
     up = u;
     left = l;
@@ -42,13 +42,13 @@ void Camera::setAspectRatio(int width, int height){
     up = up * (left.modulus() * height / width);
 }
 
-void Camera::setHFOV(double angle){
-    double r = left.modulus() / (tan(angle/2));
+void Camera::setHFOV(float angle){
+    float r = left.modulus() / (tan(angle/2));
     front = front * r;
 }
 
-void Camera::setVFOV(double angle){
-    double r = up.modulus() / (tan(angle/2));
+void Camera::setVFOV(float angle){
+    float r = up.modulus() / (tan(angle/2));
     front = front * r;
 }
 

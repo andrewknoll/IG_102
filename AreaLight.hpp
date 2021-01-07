@@ -36,7 +36,7 @@ class AreaLight{
         void setHeight(Direction height);
         Direction getHeight();
 
-        int findIntersectionWithLine(Direction d, Point o, double result[]);
+        int findIntersectionWithLine(Direction d, Point o, float result[]);
 
 
 };

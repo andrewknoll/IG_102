@@ -44,7 +44,7 @@ Direction AreaLight::getHeight(){
     return height;
 }
 
-int AreaLight::findIntersectionWithLine(Direction d, Point o, double result[]){
+int AreaLight::findIntersectionWithLine(Direction d, Point o, float result[]){
     
     int solutions = 0;
     Direction normal = cross(base, height);

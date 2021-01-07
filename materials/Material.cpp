@@ -10,7 +10,7 @@ Event& operator++(Event& e, int a){
 }
 
 Event Material::russianRoulette(bool firstTime){
-    double xi = rng.getNumber(0, 1);
+    float xi = rng.getNumber(0, 1);
     Event e = ABSORPTION;
     /*if(eP[0] != 1 && firstTime){
         e++;
@@ -24,9 +24,9 @@ Event Material::russianRoulette(bool firstTime){
     return e;
 }
 
-double Material::getProb(Event e){
-    double p;
-    double maxK[3] = {
+float Material::getProb(Event e){
+    float p;
+    float maxK[3] = {
         lambertian_coefficient.max(),
         specular_coefficient.max(),
         refraction_coefficient.max()
@@ -68,7 +68,7 @@ void Material::setAsDiffuse(RGB kl){
 
 void Material::setAsPlastic(RGB kl, RGB ks){
     emission.reset();
-    double sum;
+    float sum;
     for(int i = 0; i < 3; i++){
         sum = kl.get(i) + ks.get(i);
         //sum of kl and ks must be less than 0.9
@@ -89,7 +89,7 @@ void Material::setAsPlastic(RGB kl, RGB ks){
 
 void Material::setAsDielectric(RGB ks, RGB kt){
     emission.reset();
-    double sum;
+    float sum;
     for(int i = 0; i < 3; i++){
         sum = ks.get(i) + kt.get(i);
         //sum of ks and kt must be less than 0.9
@@ -136,7 +136,7 @@ RGB Material::getCoefficient(Event e){
 }
 
 Event Material::calculateRayCollision(RGB& factor, RGB& indirectLight, Direction rayDirection, Direction& newDirection, Point collisionPoint, Direction surfaceNormal, Direction tangent1, Direction tangent2, bool& init){
-    double theta, phi;
+    float theta, phi;
     Event e = NO_EVENT;
     RGB operand;
     if(type == LIGHTSOURCE){
@@ -159,8 +159,12 @@ Event Material::calculateRayCollision(RGB& factor, RGB& indirectLight, Direction
         switch(e){
             case DIFFUSION:
                 getAnglesByCosineSampling(theta, phi);
-                newDirection = Direction(sin(theta)*cos(phi), sin(theta)*sin(phi), cos(theta));
-                newDirection = baseChangeInverse(newDirection, collisionPoint, tangent1, tangent2, surfaceNormal);
+                newDirection = Direction(sinf(theta)*cosf(phi), sinf(theta)*sinf(phi), cosf(theta));
+                if(surfaceNormal * rayDirection > 0){
+                    //Flip normal so secondary rays are always casted in the opposite direction of rayDirection
+                    surfaceNormal = -surfaceNormal;
+                }
+                newDirection = baseChange(newDirection, collisionPoint, tangent1, tangent2, surfaceNormal);
                 break;
             case SPECULAR:
                 newDirection = rayDirection - 2 * (rayDirection * surfaceNormal) * surfaceNormal;

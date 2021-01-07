@@ -2,6 +2,10 @@
 
 long Shape::nextID = 0;
 
+long Shape::getID(){
+    return myID;
+}
+
 Material Shape::getMaterial(){
     return this->material;
 }
