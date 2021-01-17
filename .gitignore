@@ -1,0 +1,15 @@
+*.o
+.vscode
+.ppm
+images/
+*.ppm
+*.bmp
+
+# Include all executables here
+main
+Clamp
+GammaAndClamp
+Equalize
+EqualizeAndClamp
+Gamma
+test
