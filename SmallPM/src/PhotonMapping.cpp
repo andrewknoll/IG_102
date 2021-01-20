@@ -148,16 +148,13 @@ std::vector<T> transform_vector(const Vector3 &original){
 //---------------------------------------------------------------------
 void PhotonMapping::preprocess()
 {
-	m_global_map.clear();
-	m_caustics_map.clear();
-	
 	float inclination, azimuth;
 	Ray r;
 	const int no_lights = world->nb_lights();
 	Vector3 p, d, intensities;
 	int idx = 0;
 	
-	std::list<Photon> global_photons, caustic_photons;
+	std::vector<std::list<Photon> > global_photons(no_lights), caustic_photons(no_lights);
 	std::vector<float> position;
 	do{	//Repeats until there are no more photons to shoot
 		
@@ -176,29 +173,32 @@ void PhotonMapping::preprocess()
 
 		idx = (idx + 1) % no_lights;
 		
-	} while (trace_ray(r, intensities, global_photons, caustic_photons, true));
+	} while (trace_ray(r, intensities, global_photons[idx], caustic_photons[idx], m_raytraced_direct));
 	
 	//We multiply the flux of every photon to 4*PI since 1/(4*PI) is the probability of
 	//any direction for the photon 
 	//We divide the flux of every photon by the number of photons since the sum of the fluxes
 	// has to match the energy of the original light
 
-	for(Photon p : global_photons){
-		p.flux = p.flux * 4 * M_PI / global_photons.size();
-		position = transform_vector<float>(p.position);
-		m_global_map.store(position, p);
-	}
-	for(Photon p : caustic_photons){
-		p.flux = p.flux * 4 * M_PI / global_photons.size();
-		position = transform_vector<float>(p.position);
-		m_caustics_map.store(position, p);
-	}
-	if(global_photons.size() > 0){
+	for(int i = 0; i < no_lights; i++){
+		if(global_photons[i].size() > 0){
+			for(Photon p : global_photons[i]){
+				p.flux = p.flux * 4 * M_PI / global_photons[i].size();
+				position = transform_vector<float>(p.position);
+				m_global_map.store(position, p);
+			}
+		}
 		m_global_map.balance();
-	}
-	if(global_photons.size() > 0){
+		if(caustic_photons[i].size() > 0){
+			for(Photon p : caustic_photons[i]){
+				p.flux = p.flux * 4 * M_PI / caustic_photons[i].size();
+				position = transform_vector<float>(p.position);
+				m_caustics_map.store(position, p);
+			}
+		}
 		m_caustics_map.balance();
 	}
+	
 	
 }
 
@@ -216,10 +216,20 @@ void PhotonMapping::preprocess()
 Vector3 PhotonMapping::shade(Intersection &it0)const
 {
 	Vector3 L(0);
+	Vector3 W(1);
 	Intersection it(it0);
 
 	Ray path;
 	Real pdf;
+
+	if(!m_raytraced_direct){
+		//Since trace_ray is not storing direct ilumination's photons, we need to trace shadow rays to the lights to get their contribution
+		int no_lights = world->nb_lights();
+		for(int i = 0; i < no_lights; i++){
+			L += world->light(i).get_incoming_light(it.get_position());
+		}
+
+	}
 	
 	//Based on function trace_ray
 	for(int iterations = 0; iterations < 20; iterations++){
@@ -227,40 +237,32 @@ Vector3 PhotonMapping::shade(Intersection &it0)const
 
 		if(!it_path.did_hit() || !it.intersected()->material()->is_delta())
 			break;
-		else
-			cout << "uwu";
 
 		it.intersected()->material()->get_outgoing_sample_ray(it, path, pdf);
 		path.shift();
-		world->first_intersection(path, it);
-		
+		world->first_intersection(path, it);	
 
-		L = it.intersected()->material()->get_albedo(it) * L;
+		W = W * it.intersected()->material()->get_albedo(it) / pdf;
 	}
 
+	//Since we're taking samples in a circle, we have to divide the energy by the area of the circle (pi*r^2)
+	//Since these are all lambertian materials, we divide by pi (brdf_lambertian=k_lambertian/pi)
 	std::vector<const KDTree<Photon, 3>::Node*> gl_node, ca_node;
 	Real max_distance;
 	if(!m_global_map.is_empty()){
 		m_global_map.find(transform_vector<Real>(it.get_position()), m_nb_photons, gl_node, max_distance);
 		for(auto n : gl_node){
-			L += it.intersected()->material()->get_albedo(it) * n->data().flux / (M_PI * max_distance * max_distance);
+			L += it.intersected()->material()->get_albedo(it) * n->data().flux / (M_PI * M_PI * max_distance * max_distance);
 		}
 	}
 	if(!m_caustics_map.is_empty()){
 		m_caustics_map.find(transform_vector<Real>(it.get_position()), m_nb_photons, ca_node, max_distance);
 		for(auto n : ca_node){
-			L += it.intersected()->material()->get_albedo(it) * n->data().flux / (M_PI * max_distance * max_distance);
+			L += it.intersected()->material()->get_albedo(it) * n->data().flux / (M_PI * M_PI * max_distance * max_distance);
 		}
 	}
 
-	
-
-
-
-
-
-	
-
+	L = L*W;
 
 	//**********************************************************************
 	// The following piece of code is included here for two reasons: first
@@ -307,9 +309,25 @@ Vector3 PhotonMapping::shade(Intersection &it0)const
 		if (world->light(0).is_visible(it.get_position()))
 			L = Vector3(1.);
 		break;
-	}
+	
+	case 7:
+		// ----------------------------------------------------------------
+		// Reflect and refract until a diffuse surface is found, then show its albedo...
+		int nb_bounces = 0;
+		// MAX_NB_BOUNCES defined in ./SmallRT/include/globals.h
+		while( it.intersected()->material()->is_delta() && ++nb_bounces < MAX_NB_BOUNCES)
+		{
+			Ray r; float pdf;
+			it.intersected()->material()->get_outgoing_sample_ray(it, r, pdf );		
+			W = W * it.intersected()->material()->get_albedo(it)/pdf;
+			
+			r.shift();
+			world->first_intersection(r, it);
+		}
+		L = it.intersected()->material()->get_albedo(it);
 	// End of exampled code
 	//**********************************************************************
+	}
 
 	return L;
 }

@@ -50,4 +50,8 @@ In no event shall copyright holders be liable for any damage.
 #define _SCENE_TO_USE_ 0
 #endif
 
+#ifndef MAX_NB_BOUNCES
+#define MAX_NB_BOUNCES 20
+#endif
+
 #endif
