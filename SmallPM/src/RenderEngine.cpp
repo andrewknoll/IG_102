@@ -98,6 +98,9 @@ void RenderEngine::render(const std::string& name)
 		}
 		for( int x=0; x<film->get_width(); ++x)
 		{
+			if(x==147 && y == 0){
+				cout << "Falloasdaspdfoajdoghseoraostrghsoerjthosaijrgoaiejroha";
+			}
 			//Get color!
 			Vector3 col = trace_ray(Vector2(x,y));
 

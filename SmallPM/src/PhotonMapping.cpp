@@ -119,6 +119,20 @@ bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p,
 }
 
 //*********************************************************************
+// Takes a Vector3 as argument and returns a std::vector<T> with the
+// original data.
+// Type MUST be convertable to float
+//---------------------------------------------------------------------
+template<typename T>
+std::vector<T> transform_vector(const Vector3 &original){
+	std::vector<T> new_vector(3);
+	for(int i = 0; i < 3; i++){
+		new_vector[i] = original.data[i];
+	}
+	return new_vector;
+}
+
+//*********************************************************************
 // TODO: Implement the preprocess step of photon mapping,
 // where the photons are traced through the scene. To do it,
 // you need to follow these steps for each shoot:
@@ -134,6 +148,58 @@ bool PhotonMapping::trace_ray(const Ray& r, const Vector3 &p,
 //---------------------------------------------------------------------
 void PhotonMapping::preprocess()
 {
+	m_global_map.clear();
+	m_caustics_map.clear();
+	
+	float inclination, azimuth;
+	Ray r;
+	const int no_lights = world->nb_lights();
+	Vector3 p, d, intensities;
+	int idx = 0;
+	
+	std::list<Photon> global_photons, caustic_photons;
+	std::vector<float> position;
+	do{	//Repeats until there are no more photons to shoot
+		
+		//Light's position
+		p = world->light(idx).get_position();
+		//Light's intensity
+		intensities = world->light(idx).get_intensities();
+		
+		//Cosine sample direction
+		inclination = acosf(1-2*static_cast<Real>(rand())/static_cast<Real>(RAND_MAX));
+		azimuth = 2.0 * M_PI * static_cast<Real>(rand())/static_cast<Real>(RAND_MAX);
+		d = Vector3(sinf(inclination)*cosf(azimuth), sinf(inclination)*sinf(azimuth), cosf(inclination));
+
+		//Create the ray with the origin on the light's position, and with the sampled direction
+		r = Ray(p, d);
+
+		idx = (idx + 1) % no_lights;
+		
+	} while (trace_ray(r, intensities, global_photons, caustic_photons, true));
+	
+	//We multiply the flux of every photon to 4*PI since 1/(4*PI) is the probability of
+	//any direction for the photon 
+	//We divide the flux of every photon by the number of photons since the sum of the fluxes
+	// has to match the energy of the original light
+
+	for(Photon p : global_photons){
+		p.flux = p.flux * 4 * M_PI / global_photons.size();
+		position = transform_vector<float>(p.position);
+		m_global_map.store(position, p);
+	}
+	for(Photon p : caustic_photons){
+		p.flux = p.flux * 4 * M_PI / global_photons.size();
+		position = transform_vector<float>(p.position);
+		m_caustics_map.store(position, p);
+	}
+	if(global_photons.size() > 0){
+		m_global_map.balance();
+	}
+	if(global_photons.size() > 0){
+		m_caustics_map.balance();
+	}
+	
 }
 
 //*********************************************************************
@@ -152,6 +218,50 @@ Vector3 PhotonMapping::shade(Intersection &it0)const
 	Vector3 L(0);
 	Intersection it(it0);
 
+	Ray path;
+	Real pdf;
+	
+	//Based on function trace_ray
+	for(int iterations = 0; iterations < 20; iterations++){
+		Intersection it_path(it);
+
+		if(!it_path.did_hit() || !it.intersected()->material()->is_delta())
+			break;
+		else
+			cout << "uwu";
+
+		it.intersected()->material()->get_outgoing_sample_ray(it, path, pdf);
+		path.shift();
+		world->first_intersection(path, it);
+		
+
+		L = it.intersected()->material()->get_albedo(it) * L;
+	}
+
+	std::vector<const KDTree<Photon, 3>::Node*> gl_node, ca_node;
+	Real max_distance;
+	if(!m_global_map.is_empty()){
+		m_global_map.find(transform_vector<Real>(it.get_position()), m_nb_photons, gl_node, max_distance);
+		for(auto n : gl_node){
+			L += it.intersected()->material()->get_albedo(it) * n->data().flux / (M_PI * max_distance * max_distance);
+		}
+	}
+	if(!m_caustics_map.is_empty()){
+		m_caustics_map.find(transform_vector<Real>(it.get_position()), m_nb_photons, ca_node, max_distance);
+		for(auto n : ca_node){
+			L += it.intersected()->material()->get_albedo(it) * n->data().flux / (M_PI * max_distance * max_distance);
+		}
+	}
+
+	
+
+
+
+
+
+	
+
+
 	//**********************************************************************
 	// The following piece of code is included here for two reasons: first
 	// it works as a 'hello world' code to check that everthing compiles 
@@ -159,7 +269,7 @@ Vector3 PhotonMapping::shade(Intersection &it0)const
 	// will need when doing the work. Goes without saying: remove the 
 	// pieces of code that you won't be using.
 	//
-	unsigned int debug_mode = 1;
+	unsigned int debug_mode = 0;
 
 	switch (debug_mode)
 	{
