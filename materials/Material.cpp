@@ -171,7 +171,7 @@ Event Material::calculateRayCollision(RGB& factor, RGB& indirectLight, Direction
                 break;
             case REFRACTION:{
                 float n;
-                float c = -surfaceNormal * rayDirection;
+                float angle = findAngle(rayDirection, surfaceNormal);
                 //if it's going inwards. We assume all transitions go from air to other media or viceversa
                 if(surfaceNormal * rayDirection>0){  
                     n = 1 / refraction_coefficient.max();
@@ -179,7 +179,8 @@ Event Material::calculateRayCollision(RGB& factor, RGB& indirectLight, Direction
                 else{
                     n = refraction_coefficient.max();
                 }
-                newDirection = rayDirection * n + surfaceNormal * (n * (c) * sqrt(1 - n*n*(1-c*c)));
+                float sine2thetaT = n*n * (1- cosf(angle) * cosf(angle));
+                newDirection = rayDirection * n + surfaceNormal * (n*cosf(angle) - sqrtf(1 -sine2thetaT));
             }
                 break;
 

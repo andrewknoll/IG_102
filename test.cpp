@@ -64,28 +64,28 @@ Scene scene2(){
     Scene scene(400, 400);
     scene.buildCameraFromHFOV(M_PI/2, Point(0,0,0));
     shared_ptr<Plane> floor = make_shared<Plane>(Direction(0, 1, 0), 10);
-    AreaLight light(Point(0, 9, 10), Direction(1,0,0), Direction(0,0,1), 3, 2, RGB(50,50,50));
+    AreaLight light(Point(0, 9.99, 10), Direction(1,0,0), Direction(0,0,1), 3, 2, RGB(35,35,35));
     shared_ptr<Plane> ceiling = make_shared<Plane>(Direction(0, 1, 0), -10);
     shared_ptr<Plane> redWall = make_shared<Plane>(Direction(1, 0, 0), 10);
     shared_ptr<Plane> greenWall = make_shared<Plane>(Direction(1, 0, 0), -10);
     shared_ptr<Plane> whiteWall = make_shared<Plane>(Direction(0, 0, -1), 14);
     shared_ptr<Sphere> plasticSphere = make_shared<Sphere>(Direction(0, 0, 4), Point(3.5, -8, 10));
-    shared_ptr<Sphere> specularSphere = make_shared<Sphere>(Direction(0, 0, 4), Point(-4, -8, 13));
+    shared_ptr<Sphere> specularSphere = make_shared<Sphere>(Direction(0, 0, 4), Point(-7, -8, 13));
 
     Material diffuseWhite;
-    diffuseWhite.setAsDiffuse(RGB(1, 1, 1));
+    diffuseWhite.setAsDiffuse(RGB(0.6, 0.6, 0.6));
 
     Material diffuseRed;
-    diffuseRed.setAsDiffuse(RGB(1, 0, 0));
+    diffuseRed.setAsDiffuse(RGB(0.6, 0, 0));
 
     Material diffuseGreen;
-    diffuseGreen.setAsDiffuse(RGB(0, 1, 0));
+    diffuseGreen.setAsDiffuse(RGB(0, 0.6, 0));
 
     Material plastic;
-    plastic.setAsPlastic(RGB(1, 0, 0), RGB(1, 0, 0));
+    plastic.setAsPlastic(RGB(0.6, 0, 0), RGB(0.3, 0.3, 0.3));
 
     Material dielectric;
-    dielectric.setAsDielectric(RGB(1,1,1), RGB(1,1,1));
+    dielectric.setAsDielectric(RGB(0.1,0.1,0.1), RGB(0.8,0.8,0.8));
     
     floor->setMaterial(diffuseWhite);
     plasticSphere->setMaterial(plastic);
@@ -143,10 +143,12 @@ Scene scene3(){
 
 int main(){
 
+    PathTracer pt;
+
     Image img;
     img.setWidthHeight(400, 400);
 
-    pathTrace(img, scene2(), 64);
+    pt.pathTrace(img, scene2(), 200);
 
     float args[2] = {img.getMax(), 0.95};
     writeImage(img, "output.bmp", GAMMA, 255, true, args);

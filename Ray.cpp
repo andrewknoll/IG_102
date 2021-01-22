@@ -1,6 +1,6 @@
 #include "Ray.hpp"
 
-#define EPSILON 0.001
+#define EPSILON 0.0001
 
 Direction Ray::getDirection(){
     return this->dir;
@@ -77,7 +77,10 @@ RGB Ray::getRayResult(Scene& scene){
     ShapePtr shape;
     ShapePtr lastShape = nullptr;
 
+    vector<ShapePtr> path; 
+
     AreaLight area;
+    string cozinha = "";
 
     Material material;
     Direction newDirection, t1, t2, normal;
@@ -109,14 +112,22 @@ RGB Ray::getRayResult(Scene& scene){
         for(int al = 0; al < nAreaLights; al++){
             area = scene.getAreaLight(al);
             nIntersections = area.findIntersectionWithLine(dir, origin, solutions);
-            if(nIntersections > 0){
-                if(minT > solutions[0]){
+            if(nIntersections > 0 ){
+                if(minT > solutions[0] && solutions[0] >= EPSILON){
                     minT = solutions[0];
                     closestShape = nullptr;
                     lastEvent = LIGHTFOUND;
                     foundAreaLight = true;
                 }
             }
+            /*bool cozinhabooleana = false;
+            for(ShapePtr p : path){
+                cozinha.append(to_string(p->getID()));
+                cozinha.append("->");
+                if(p->getMaterial().is(MaterialType::PLASTIC)) cozinhabooleana =true;
+            }
+            if(cozinhabooleana)
+            cout << cozinha << endl;*/
         }
 
         if(foundAreaLight){
@@ -128,6 +139,8 @@ RGB Ray::getRayResult(Scene& scene){
             material = closestShape->getMaterial();
             intersection = minT * dir + origin;
             normal = closestShape->getNormalAtPoint(intersection);
+           
+            path.push_back(closestShape);
 
             t1 = cross(normal, up);
             if(t1.isNull()){

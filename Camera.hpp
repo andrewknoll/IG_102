@@ -31,8 +31,8 @@ class Camera{
         Direction getFront();
         Point getOrigin();
         
-        Point changeToGlobalCoordinates(Point p);
-        Direction changeToGlobalCoordinates(Direction d);
+        Point changeToGlobalCoordinates(Point p) const;
+        Direction changeToGlobalCoordinates(Direction d) const;
 };
 
 #endif

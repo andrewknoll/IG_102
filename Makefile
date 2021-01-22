@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -ggdb -std=c++11
+CFLAGS=-Wall -ggdb -std=c++11 -pthread
 img=Image
 imgDir=imaging
 colorDir=color

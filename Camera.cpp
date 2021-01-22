@@ -68,10 +68,10 @@ Point Camera::getOrigin(){
     return origin;
 }
 
-Point Camera::changeToGlobalCoordinates(Point p){
+Point Camera::changeToGlobalCoordinates(Point p) const{
     return baseChange(p, origin, left, up, front);
 }
 
-Direction Camera::changeToGlobalCoordinates(Direction d){
+Direction Camera::changeToGlobalCoordinates(Direction d) const{
     return baseChange(d, origin, left, up, front);
 }

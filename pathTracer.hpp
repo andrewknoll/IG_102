@@ -15,9 +15,27 @@
 #include <memory>
 #include <limits>
 #include <iomanip>
+#include <thread>
+#include <math.h>
+#include <mutex>
+#include <atomic>
+#include <condition_variable>
 
 using namespace std;
 
-void pathTrace(Image& img, Scene scene, int rpp);
+class PathTracer{
+    private:
+        atomic_int current_width  = {0};
+        atomic_int current_height = {0};
 
+        atomic_int pixelsLeftToGenerate;
+
+        void threadWork(Image& img, Scene scene, int rpp, int subdivisions, int id);
+        void applyToSubimage(Image& img, Scene scene, int rpp, int subdivisions, int id);
+
+        int numberOfSubdivisions(int width, int height);
+
+    public:
+        void pathTrace(Image& img, Scene scene, int rpp);
+};
 #endif
