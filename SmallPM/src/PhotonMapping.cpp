@@ -133,6 +133,47 @@ std::vector<T> transform_vector(const Vector3 &original){
 }
 
 //*********************************************************************
+// Returns the maximum of a Vector3
+//---------------------------------------------------------------------
+Real max(Vector3 v){
+	return std::max({v.getComponent(0), v.getComponent(1), v.getComponent(2)});
+}
+
+//*********************************************************************
+// Returns a vector with the accumulated probabilities for every light
+// in the world
+//---------------------------------------------------------------------
+std::vector<Real> get_lights_probabilities(World* world){
+	int no_lights = world->nb_lights();
+	std::vector<Real> acc_prob(no_lights);
+	float sum = 0;
+
+	for(int i = 0; i < no_lights; i++){
+		sum += max(world->light(i).get_intensities());
+	}
+
+	acc_prob[0] = max(world->light(0).get_intensities()) / sum;
+	for(int i = 1; i < no_lights; i++){
+		acc_prob[i] = acc_prob[i-1] + (max(world->light(i).get_intensities()) / sum);
+	}
+	return acc_prob;
+}
+
+//*********************************************************************
+// Returns a random integer with a probability given by the accumulated
+// probabilities vector
+//---------------------------------------------------------------------
+int russian_roulette(std::vector<Real> acc_prob){
+	Real r = static_cast<Real>(rand())/static_cast<Real>(RAND_MAX);
+	int i = 0;
+
+	while(r > acc_prob[0]){
+		i++;
+	}
+	return i;
+}
+
+//*********************************************************************
 // TODO: Implement the preprocess step of photon mapping,
 // where the photons are traced through the scene. To do it,
 // you need to follow these steps for each shoot:
@@ -152,12 +193,18 @@ void PhotonMapping::preprocess()
 	Ray r;
 	const int no_lights = world->nb_lights();
 	Vector3 p, d, intensities;
-	int idx = 0;
-	
+	int idx;
+
+	Real current_prob;
+	std::vector<Real> probs = get_lights_probabilities(world);
 	std::vector<std::list<Photon> > global_photons(no_lights), caustic_photons(no_lights);
 	std::vector<float> position;
+
 	do{	//Repeats until there are no more photons to shoot
 		
+		//Importance Sampling
+		idx = russian_roulette(probs);
+
 		//Light's position
 		p = world->light(idx).get_position();
 		//Light's intensity
@@ -170,8 +217,6 @@ void PhotonMapping::preprocess()
 
 		//Create the ray with the origin on the light's position, and with the sampled direction
 		r = Ray(p, d);
-
-		idx = (idx + 1) % no_lights;
 		
 	} while (trace_ray(r, intensities, global_photons[idx], caustic_photons[idx], m_raytraced_direct));
 	
@@ -179,27 +224,26 @@ void PhotonMapping::preprocess()
 	//any direction for the photon 
 	//We divide the flux of every photon by the number of photons since the sum of the fluxes
 	// has to match the energy of the original light
-
 	for(int i = 0; i < no_lights; i++){
+		if(i==0) current_prob = probs[0];
+		else current_prob = probs[i] - probs[i-1];
 		if(global_photons[i].size() > 0){
 			for(Photon p : global_photons[i]){
-				p.flux = p.flux * 4 * M_PI / global_photons[i].size();
+				p.flux = p.flux * 4 * M_PI / (global_photons[i].size() * current_prob);
 				position = transform_vector<float>(p.position);
 				m_global_map.store(position, p);
 			}
+			m_global_map.balance();
 		}
-		m_global_map.balance();
 		if(caustic_photons[i].size() > 0){
 			for(Photon p : caustic_photons[i]){
-				p.flux = p.flux * 4 * M_PI / caustic_photons[i].size();
+				p.flux = p.flux * 4 * M_PI / (caustic_photons[i].size() * current_prob);
 				position = transform_vector<float>(p.position);
 				m_caustics_map.store(position, p);
 			}
+			m_caustics_map.balance();
 		}
-		m_caustics_map.balance();
 	}
-	
-	
 }
 
 //*********************************************************************
