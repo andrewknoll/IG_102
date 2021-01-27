@@ -1,6 +1,5 @@
 #include "Sphere.hpp"
 
-
 Sphere::Sphere(Direction axis, Point center){
     this->myID = ++nextID;
     this->axis = axis;

@@ -51,6 +51,7 @@ void PathTracer::applyToSubimage(Image& img, Scene scene, int rpp, int subdivisi
     const int height = scene.getHeight();
     const int stepw = width/subdivisions, steph = height/subdivisions;
 
+//TODO : Mirar con calma problemas de concurrencia
     w0 = current_width;
     wf = min(width, w0 + stepw);
     current_width = (wf) % width;
@@ -106,6 +107,7 @@ void PathTracer::applyToSubimage(Image& img, Scene scene, int rpp, int subdivisi
                     */
                 d.setAll((2*i + rng.getNumber(0,1))/width - 1 , (-2*j + rng.getNumber(0,1))/height +1 , 1);
                 d.normalize();
+                //Todo: mirar si es matriz inversa
                 d = camera.changeToGlobalCoordinates(d);
 
                 ray.setOrigin(o);

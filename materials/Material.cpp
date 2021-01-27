@@ -173,6 +173,8 @@ Event Material::calculateRayCollision(RGB& factor, RGB& indirectLight, Direction
                 float n;
                 float angle = findAngle(rayDirection, surfaceNormal);
                 //if it's going inwards. We assume all transitions go from air to other media or viceversa
+
+                //MIRAR CON CALMA
                 if(surfaceNormal * rayDirection>0){  
                     n = 1 / refraction_coefficient.max();
                 }

@@ -41,6 +41,7 @@ Event Ray::getShadowRayResult(Scene& scene, RGB& light, LightPoint destination, 
         }
     }
     if(!foundObstacle){
+        //Mirar con calma
         light = light + destination.getEmission() * max(lastShape->getNormalAtPoint(this->origin) * this->dir, 0.0f) * lastShape->getMaterial().getCoefficient(DIFFUSION) / (dist * dist * M_PI);
     }
     return foundObstacle ? NO_EVENT : LIGHTFOUND;
@@ -76,8 +77,6 @@ RGB Ray::getRayResult(Scene& scene){
     ShapePtr closestShape;
     ShapePtr shape;
     ShapePtr lastShape = nullptr;
-
-    vector<ShapePtr> path; 
 
     AreaLight area;
     string cozinha = "";
@@ -120,14 +119,6 @@ RGB Ray::getRayResult(Scene& scene){
                     foundAreaLight = true;
                 }
             }
-            /*bool cozinhabooleana = false;
-            for(ShapePtr p : path){
-                cozinha.append(to_string(p->getID()));
-                cozinha.append("->");
-                if(p->getMaterial().is(MaterialType::PLASTIC)) cozinhabooleana =true;
-            }
-            if(cozinhabooleana)
-            cout << cozinha << endl;*/
         }
 
         if(foundAreaLight){
@@ -139,8 +130,6 @@ RGB Ray::getRayResult(Scene& scene){
             material = closestShape->getMaterial();
             intersection = minT * dir + origin;
             normal = closestShape->getNormalAtPoint(intersection);
-           
-            path.push_back(closestShape);
 
             t1 = cross(normal, up);
             if(t1.isNull()){
@@ -161,6 +150,7 @@ RGB Ray::getRayResult(Scene& scene){
             setDirection(newDirection);
             setOrigin(intersection);
 
+            //Next Event Estimation
             if(lastEvent == DIFFUSION){
                 shadowEvent = castShadowRays(scene, directBounce, intersection, lastShape);
                 if(initialized){
