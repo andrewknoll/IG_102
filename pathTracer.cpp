@@ -18,50 +18,48 @@ void PathTracer::pathTrace(Image& img, Scene scene, int rpp){
     pixelsLeftToGenerate = width * height;
 
     if(nShapes > 0){
-        int nThreads = thread::hardware_concurrency();
-        vector<thread> pool(nThreads);
+        int nThreads = thread::hardware_concurrency() - 1;
 
-        cout << fixed << setprecision(2);
-        cout << "Applying Path Tracing Algorithm to the scene with " << nThreads << " processes..." << endl;
-        
         subdivisions = numberOfSubdivisions(width, height);
 
-        for(int i = 0; i < nThreads; i++){
-            pool[i] = thread(&PathTracer::threadWork, this, ref(img), scene, rpp, subdivisions, i);
-        }
+        cout << fixed << setprecision(2);
+        cout << "Applying Path Tracing Algorithm to the scene with " << nThreads + 1 << " processes..." << endl;
 
-        for(int i = 0; i < nThreads; i++){
-            pool[i].join();
+        if(nThreads > 1){
+            vector<thread> pool(nThreads);
+
+            for(int i = 0; i < nThreads; i++){
+            pool[i] = thread(&PathTracer::threadWork, this, ref(img), scene, rpp, subdivisions);
+            }
+            threadWork(img, scene, rpp, subdivisions);
+
+            for(int i = 0; i < nThreads; i++){
+                pool[i].join();
+            }
         }
+        else{
+            threadWork(img, scene, rpp, subdivisions);
+        }
+        
         //applyToSubimage(img, scene, rpp, subdivisions, 0);
         cout << "\r 100.00%" << endl;
     }
     
 }
 
-void PathTracer::threadWork(Image& img, Scene scene, int rpp, int subdivisions, int id){
+void PathTracer::threadWork(Image& img, Scene scene, int rpp, int subdivisions){
     while(pixelsLeftToGenerate > 0){
-        applyToSubimage(img, scene, rpp, subdivisions, id);
+        applyToSubimage(img, scene, rpp, subdivisions);
     }
 }
 
-void PathTracer::applyToSubimage(Image& img, Scene scene, int rpp, int subdivisions, int id){
+void PathTracer::applyToSubimage(Image& img, Scene scene, int rpp, int subdivisions){
     int w0, h0, wf, hf;
     const int width = scene.getWidth();
     const int height = scene.getHeight();
-    const int stepw = width/subdivisions, steph = height/subdivisions;
-
-//TODO : Mirar con calma problemas de concurrencia
-    w0 = current_width;
-    wf = min(width, w0 + stepw);
-    current_width = (wf) % width;
-
-    h0 = current_height;
-    hf = min(height-1, h0 + steph);
-    current_height += steph * floor((wf + 1) / width);
-
-    pixelsLeftToGenerate -= (wf - w0) * (hf - h0);
     
+
+    getSubdivision(width, height, subdivisions, w0, wf, h0, hf);
     /*w0 = 270;
     wf = 274;
     h0 = 389;
@@ -124,4 +122,29 @@ void PathTracer::applyToSubimage(Image& img, Scene scene, int rpp, int subdivisi
 
 int PathTracer::numberOfSubdivisions(int width, int height){
     return round(sqrt(sqrt(width*height)));
+}
+
+void PathTracer::getSubdivision(const int w, const int h, const int n, int& w0, int& wf, int& h0, int& hf){
+    const int stepw = w/n, steph = h/n;
+    unique_lock<mutex> lck(mtx);
+    while(!ready){
+        cv.wait(lck);
+    }
+    
+    //w0 = the current cursor
+    //wf = the current cursor + the size of the subdivision.
+    //In case such position is out of bounds, it will be reset to the maximum width
+    //Resets the current cursor to the next position that has to be taken
+    //same with the height cursors
+    w0 = current_width;
+    wf = min(w, w0 + stepw);
+    current_width = (wf) % w;
+
+    h0 = current_height;
+    hf = min(h, h0 + steph);
+    current_height += steph * floor((wf) / w);
+
+    pixelsLeftToGenerate -= (wf - w0) * (hf - h0);
+
+    cv.notify_all();
 }
