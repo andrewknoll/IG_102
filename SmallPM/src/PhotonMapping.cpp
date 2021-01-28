@@ -197,6 +197,7 @@ void PhotonMapping::preprocess()
 
 	Real current_prob;
 	std::vector<Real> probs = get_lights_probabilities(world);
+	//Vector with the list of Photons in which each list with index i has the photons corresponding to light i 
 	std::vector<std::list<Photon> > global_photons(no_lights), caustic_photons(no_lights);
 	std::vector<float> position;
 
@@ -285,7 +286,7 @@ Vector3 PhotonMapping::shade(Intersection &it0)const
 		it.intersected()->material()->get_outgoing_sample_ray(it, path, pdf);
 		path.shift();
 		world->first_intersection(path, it);	
-
+		//Preguntar
 		W = W * it.intersected()->material()->get_albedo(it) / pdf;
 	}
 
