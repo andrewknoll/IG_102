@@ -1,16 +1,13 @@
 #ifndef __RNG__
 #define __RNG__
 
-#include <random>
+#include <cstdlib>
 
 using namespace std;
 
 struct{
-    default_random_engine re;
-
     float getNumber(float min, float max){
-        uniform_real_distribution<float> unif{min, max};
-        return unif(re);
+        return (rand() * 1.0 / RAND_MAX) * max + min;
     }
 } rng;
 

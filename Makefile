@@ -1,5 +1,6 @@
 CC=g++
 CFLAGS=-Wall -ggdb -std=c++11 -pthread
+DEBUGFLAGS=-Wall -ggdb -std=c++11 -pthread
 img=Image
 imgDir=imaging
 colorDir=color
@@ -25,13 +26,15 @@ rng=rng
 clamp=Clamp
 equClamp=EqualizeAndClamp
 cgamma=GammaAndClamp
+rein02=Reinhard2002
+rein05=Reinhard2005
 iw=ImageWriter
 lp=LightPoint
 al=AreaLight
 
 ##link
-$(main):  $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(sphere).o $(scene).o $(shape).o $(camera).o $(ray).o $(rgb).o $(oper).o $(material).o $(pathTr).o $(lp).o $(al).o $(iw).o $(clamp).o $(equClamp).o $(cgamma).o $(main).o
-	$(CC) $(CFLAGS) $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(shape).o $(sphere).o $(scene).o $(camera).o $(ray).o $(rgb).o $(oper).o $(material).o $(pathTr).o $(lp).o $(al).o $(iw).o $(clamp).o $(equClamp).o $(cgamma).o $(main).o -o $(main)
+$(main):  $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(sphere).o $(scene).o $(shape).o $(camera).o $(ray).o $(rgb).o $(oper).o $(material).o $(pathTr).o $(lp).o $(al).o $(iw).o $(clamp).o $(equClamp).o $(cgamma).o $(rein02).o $(rein05).o $(main).o
+	$(CC) $(DEBUGFLAGS) $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(shape).o $(sphere).o $(scene).o $(camera).o $(ray).o $(rgb).o $(oper).o $(material).o $(pathTr).o $(lp).o $(al).o $(iw).o $(clamp).o $(equClamp).o $(cgamma).o $(rein02).o $(rein05).o $(main).o -o $(main)
 
 ##compile
 $(iw).o: $(colorDir)/$(iw).cpp
@@ -46,8 +49,14 @@ $(equClamp).o: $(colorDir)/$(equClamp).cpp
 $(cgamma).o: $(colorDir)/$(cgamma).cpp
 	$(CC) $(CFLAGS) $(colorDir)/$(cgamma).cpp -c 
 
+$(rein02).o: $(colorDir)/$(rein02).cpp
+	$(CC) $(CFLAGS) $(colorDir)/$(rein02).cpp -c 
+
+$(rein05).o: $(colorDir)/$(rein05).cpp
+	$(CC) $(CFLAGS) $(colorDir)/$(rein05).cpp -c 
+
 $(rgb).o: $(colorDir)/$(rgb).cpp $(colorDir)/$(rgb).hpp
-	$(CC) $(CFLAGS) $(colorDir)/$(rgb).cpp -c 
+	$(CC) $(DEBUGFLAGS) $(colorDir)/$(rgb).cpp -c 
 
 $(img).o: $(imgDir)/$(img).cpp $(imgDir)/$(img).hpp
 	$(CC) $(CFLAGS) $(imgDir)/$(img).cpp -c 
@@ -62,7 +71,7 @@ $(sphere).o: $(shapeDir)/$(sphere).cpp
 	$(CC) $(CFLAGS) $(shapeDir)/$(sphere).cpp -c 
 
 $(material).o: $(matDir)/$(material).cpp
-	$(CC) $(CFLAGS) $(matDir)/$(material).cpp -c 
+	$(CC) $(DEBUGFLAGS) $(matDir)/$(material).cpp -c 
 
 $(scene).o: $(scene).cpp
 	$(CC) $(CFLAGS) $(scene).cpp -c 
@@ -71,7 +80,7 @@ $(camera).o: $(camera).cpp
 	$(CC) $(CFLAGS) $(camera).cpp -c 
 
 $(ray).o: $(ray).cpp
-	$(CC) $(CFLAGS) $(ray).cpp -c 
+	$(CC) $(DEBUGFLAGS) $(ray).cpp -c 
 
 $(lp).o: $(lp).cpp
 	$(CC) $(CFLAGS) $(lp).cpp -c 
@@ -92,10 +101,10 @@ $(matrix).o: $(vfieldDir)/$(matrix).cpp
 	$(CC) $(CFLAGS) $(vfieldDir)/$(matrix).cpp -c 
 
 $(pathTr).o: $(pathTr).cpp
-	$(CC) $(CFLAGS) $(pathTr).cpp -c 
+	$(CC) $(DEBUGFLAGS) $(pathTr).cpp -c 
 
 $(oper).o: $(vfieldDir)/$(oper).cpp
-	$(CC) $(CFLAGS) $(vfieldDir)/$(oper).cpp -c 
+	$(CC) $(DEBUGFLAGS) $(vfieldDir)/$(oper).cpp -c 
 
 $(main).o: $(main).cpp
 	$(CC) $(CFLAGS) $(main).cpp -c 
@@ -103,4 +112,4 @@ $(main).o: $(main).cpp
 
 ##clear
 clean:
-	rm -rf *.o $(plane) $(shape) $(sphere) $(gamma) $(cgamma)
+	rm -rf *.o $(plane) $(shape) $(sphere) $(gamma) $(cgamma) $(rein02) $(rein05) $(main).o $(main)

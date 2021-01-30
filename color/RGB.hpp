@@ -15,14 +15,16 @@ class RGB{
         RGB();
         RGB(float red, float green, float blue);
         void toString();
-        float get(int i);
-        void set(float c, int i);
         void reset();
         float max();
+        float operator[](const int i) const;
+        float& operator[](const int i);
         RGB operator+(RGB b);
+        RGB operator-(RGB b);
         RGB operator*(RGB b);
         RGB operator*(float b);
         RGB operator/(float b);
+        RGB operator/(RGB b);
 };
 
 RGB calculateRGBMean(vector<RGB> v);

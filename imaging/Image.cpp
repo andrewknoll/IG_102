@@ -60,6 +60,7 @@ void Image::setTuple(RGB color, int i, int j){
     m[i][j] = color;
     if(maxFound < color.max()){
         maxFound = color.max();
+        cout << color.max() << endl;
     }
 }
 
@@ -162,8 +163,8 @@ void Image::applyToneMapper(){
                 tuple = m[i][j];
                 for(int k = 0; k < 3; k++){
 
-                    color = tm->mapValue(tuple.get(k));
-                    tuple.set(tm->mapValue(color), k);
+                    color = tm->mapValue(tuple[k]);
+                    tuple[k] = tm->mapValue(color);
                     
                     if(color > maxAfterMapping){
                         maxAfterMapping = color;

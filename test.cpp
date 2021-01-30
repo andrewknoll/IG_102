@@ -26,12 +26,13 @@ Scene scene1(){
     RGB rgb2(0.25, 0.75, 0.16);
     RGB rgb5(0.25, 1, 0.16);
     RGB rgb3(1, 1, 1);
+    RGB refrac(1.3, 1.3, 1.3);
 
     Material diffuse;
     diffuse.setAsDiffuse(rgb);
 
     Material dielectric;
-    dielectric.setAsDielectric(rgb3, rgb3);
+    dielectric.setAsDielectric(0.1, refrac);
 
     Material plastic;
     plastic.setAsPlastic(rgb2, rgb5);
@@ -62,30 +63,30 @@ Scene scene1(){
 
 Scene scene2(){
     Scene scene(400, 400);
-    scene.buildCameraFromHFOV(M_PI/2, Point(0,0,0));
-    shared_ptr<Plane> floor = make_shared<Plane>(Direction(0, 1, 0), 10);
-    AreaLight light(Point(0, 9.99, 10), Direction(1,0,0), Direction(0,0,1), 3, 2, RGB(35,35,35));
-    shared_ptr<Plane> ceiling = make_shared<Plane>(Direction(0, 1, 0), -10);
-    shared_ptr<Plane> redWall = make_shared<Plane>(Direction(1, 0, 0), 10);
-    shared_ptr<Plane> greenWall = make_shared<Plane>(Direction(1, 0, 0), -10);
-    shared_ptr<Plane> whiteWall = make_shared<Plane>(Direction(0, 0, -1), 14);
-    shared_ptr<Sphere> plasticSphere = make_shared<Sphere>(Direction(0, 0, 4), Point(3.5, -8, 10));
-    shared_ptr<Sphere> specularSphere = make_shared<Sphere>(Direction(0, 0, 4), Point(-7, -8, 13));
+    scene.buildCameraFromHFOV(3*M_PI/5, Point(0,0,0));
+    shared_ptr<Plane> floor = make_shared<Plane>(Direction(0, 1, 0), -5);
+    AreaLight light(Point(0, 4.99, 2.5), Direction(1,0,0), Direction(0,0,1), 3, 2, RGB(5,5,5));
+    shared_ptr<Plane> ceiling = make_shared<Plane>(Direction(0, 1, 0), 5);
+    shared_ptr<Plane> redWall = make_shared<Plane>(Direction(1, 0, 0), -5);
+    shared_ptr<Plane> greenWall = make_shared<Plane>(Direction(1, 0, 0), 5);
+    shared_ptr<Plane> whiteWall = make_shared<Plane>(Direction(0, 0, -1), 5);
+    shared_ptr<Sphere> plasticSphere = make_shared<Sphere>(Direction(0, 0, 3), Point(2.5, -4, 5));
+    shared_ptr<Sphere> specularSphere = make_shared<Sphere>(Direction(0, 0, 2), Point(-3, -2, 4));
 
     Material diffuseWhite;
-    diffuseWhite.setAsDiffuse(RGB(0.6, 0.6, 0.6));
+    diffuseWhite.setAsDiffuse(RGB(0.9, 0.9, 0.9));
 
     Material diffuseRed;
-    diffuseRed.setAsDiffuse(RGB(0.6, 0, 0));
+    diffuseRed.setAsDiffuse(RGB(0.9, 0, 0));
 
     Material diffuseGreen;
-    diffuseGreen.setAsDiffuse(RGB(0, 0.6, 0));
+    diffuseGreen.setAsDiffuse(RGB(0, 0.9, 0));
 
     Material plastic;
     plastic.setAsPlastic(RGB(0.6, 0, 0), RGB(0.3, 0.3, 0.3));
 
     Material dielectric;
-    dielectric.setAsDielectric(RGB(0.1,0.1,0.1), RGB(0.8,0.8,0.8));
+    dielectric.setAsDielectric(0.05, RGB(1.2, 1.2, 1.2));
     
     floor->setMaterial(diffuseWhite);
     plasticSphere->setMaterial(plastic);
@@ -148,10 +149,10 @@ int main(){
     Image img;
     img.setWidthHeight(400, 400);
 
-    pt.pathTrace(img, scene2(), 200);
+    pt.pathTrace(img, scene2(), 10);
 
-    float args[2] = {img.getMax(), 0.95};
-    writeImage(img, "output.bmp", GAMMA, 255, true, args);
+    float args[1] = {img.getMaxFound()};
+    writeImage(img, "output.bmp", REINHARD2005, 255, true, args);
 
     
 }

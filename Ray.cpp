@@ -79,7 +79,6 @@ RGB Ray::getRayResult(Scene& scene){
     ShapePtr lastShape = nullptr;
 
     AreaLight area;
-    string cozinha = "";
 
     Material material;
     Direction newDirection, t1, t2, normal;
@@ -153,14 +152,15 @@ RGB Ray::getRayResult(Scene& scene){
             //Next Event Estimation
             if(lastEvent == DIFFUSION){
                 shadowEvent = castShadowRays(scene, directBounce, intersection, lastShape);
-                if(initialized){
-                    directLight = directLight + preFactor * directBounce;
-                }
-                else{
-                    directLight = directLight + directBounce;
+                if(shadowEvent != NO_EVENT){
+                    if(initialized){
+                        directLight = directLight + preFactor * directBounce;
+                    }
+                    else{
+                        directLight = directLight + directBounce;
+                    }
                 }
             }
-            
         }
     }while(closestShape != nullptr && lastEvent != ABSORPTION && lastEvent != LIGHTFOUND);
     //bounce when we have found something to bounce on, and neither a light source was found nor the ray was absorbed

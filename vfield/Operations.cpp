@@ -180,7 +180,7 @@ Coordinates baseChangeInverse(Coordinates& coord, const Point o, const Direction
 }
 
 bool solveQuadraticEquation(float a, float b, float c, float results[2]){
-    float insideSquareRoot = b*b - 4*a*c;
+    float insideSquareRoot = (b*b) - (4*a*c);
     bool isReal = (insideSquareRoot >= 0);
     if(isReal){
         results[0] = (-b + sqrt(insideSquareRoot))/(2*a);

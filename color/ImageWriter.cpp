@@ -41,9 +41,9 @@ void generatePPM(Image& img, string output){
         cout << fixed << setprecision(2);
         for(int j = 0; j < height; j++){
             for(int i = 0; i < width; i++){
-                red = img.getTuple(i, j).get(0);
-                green = img.getTuple(i, j).get(1);
-                blue = img.getTuple(i, j).get(2);
+                red = img.getTuple(i, j)[0];
+                green = img.getTuple(i, j)[1];
+                blue = img.getTuple(i, j)[2];
 
                 fout << img.memoryToDisk(red) << " ";
                 fout << img.memoryToDisk(green) << " ";
@@ -100,9 +100,9 @@ void generateBMP(Image& img, string output){
         //PIXEL DATA (stored bottom to top)
         for(int j = height - 1; j >= 0; j--){
             for(int i = 0; i < width; i++){
-                red = img.getTuple(i, j).get(0);
-                green = img.getTuple(i, j).get(1);
-                blue = img.getTuple(i, j).get(2);
+                red = img.getTuple(i, j)[0];
+                green = img.getTuple(i, j)[1];
+                blue = img.getTuple(i, j)[2];
                 
                 redByte = img.memoryToDisk(red);
                 greenByte = img.memoryToDisk(green);
@@ -148,6 +148,10 @@ ToneMapperPtr createToneMapper(ToneMappingType tmt, float *args){
         case CLAMPGAMMA:
             tm = make_shared<GammaAndClamp>(args[1], args[0]); 
             break;
+        case REINHARD2002:
+            tm = make_shared<Reinhard2002>();
+        case REINHARD2005:
+            tm = make_shared<Reinhard2005>(args[0]);
     }
     return tm;
 }

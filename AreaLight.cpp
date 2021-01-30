@@ -71,7 +71,7 @@ int AreaLight::findIntersectionWithLine(Direction d, Point o, float result[]){
     float u = (intersection[i] - origin[i] - v*height[i])/base[i];
 
     //if((intersection[k] - origin[k] - u*base[k] - v*height[k]) < 0.1){
-        if(abs(u) <= boundU && abs(v) <= boundV){ //Perhaps should be check that it isn't behind the origin. "t <= 0" at the moment DOESN'T WORK
+        if(abs(u) <= boundU && abs(v) <= boundV){
             result[0] = t;
             solutions = 1;
         }

@@ -28,13 +28,13 @@ void Sphere::calculateTangentsAtPoint(Point p, Direction& t1, Direction& t2){
 int Sphere::findIntersectionWithLine(Direction d, Point o, float result[]){
     float roots[2];
     float a, b, c, r;
-    Point aux;
+    float aux;
     bool isReal;
     int intersections = 0;
 
     a = d.modulus() * d.modulus();
     b = 2 * d * (o - center);
-    aux = (o - center);
+    aux = (o - center).modulus();
     r = (axis).modulus() / 2;
     c = aux * aux - r * r;
 
