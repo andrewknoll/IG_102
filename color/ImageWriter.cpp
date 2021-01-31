@@ -1,28 +1,49 @@
-#include "ImageWriter.hpp"
+//File with the necessary functions to write an image on an output file
 
+#include "ImageWriter.hpp"
+// Character that identifies a comment in PPM files
 #define COMMENT '#'
+// Sequence that identifies a comment that indicates the Max values of LDR files to be translated into HDR
 #define MAX_COMMENT "#MAX="
 
+// Size of the BMP format header
 #define BMP_HEADER_SIZE 14
+//Size of the information fields in BMP format
 #define BMP_INFO_SIZE 40
-//(256 possible intensities for each RGB component)
+//Bits per pixel in the BMP format
 #define BMP_BITS_PER_PIXEL 24
 
-//Writes size bytes of obj into fout
+//***********************************************************************
+//Writes size bytes (binary) of obj into fout
+// @tparam T type of the object to be written
+// @param fout Output file stream
+// @param obj Object to be written
+// @param size Size of the object. Defaults to the obj's size.
+//***********************************************************************
 template <typename T>
 void binWrite(ofstream& fout, T obj, int size = -1){
     if(size == -1) size = sizeof(obj);
     fout.write(reinterpret_cast<const char*>(&obj), size);
 }
 
-//Pointer Overload
+//***********************************************************************
+//Writes size bytes (binary) of *obj into fout
+// @tparam T type of the object to be written
+// @param fout Output file stream
+// @param obj Pointer to the object to be written
+// @param size Size of the object. Defaults to the obj's size.
+//***********************************************************************
 template <typename T>
 void binWrite(ofstream& fout, T* obj, int size = -1){
     if(size == -1) size = sizeof(*obj);
     fout.write(reinterpret_cast<const char*>(obj), size);
 }
 
-
+//***********************************************************************
+// Writes the image img in a file with name "output" in PPM format
+// @param img Image to be written
+// @param output Name of the output file
+//***********************************************************************
 void generatePPM(Image& img, string output){
 
     ofstream fout(output);
@@ -64,6 +85,11 @@ void generatePPM(Image& img, string output){
     fout.close();
 }
 
+//***********************************************************************
+// Writes the image img in a file with name "output" in Bitmap format
+// @param img Image to be written
+// @param output Name of the output file
+//***********************************************************************
 void generateBMP(Image& img, string output){
 
     ofstream fout(output, ios::binary);
@@ -129,12 +155,19 @@ void generateBMP(Image& img, string output){
     fout.close();
 }
 
-//Clamp:            setToneMapper(CLAMP, null)
-//Equalize:         setToneMapper(EQUALIZE, {imageMax})
-//EqualizeClamp:    setToneMapper(EQUALIZECLAMP, {V})
-//Gamma:            setToneMapper(GAMMA, {imageMax, gamma})
-//GammaClamp:       setToneMapper(CLAMPGAMMA, {V, gamma})
-ToneMapperPtr createToneMapper(ToneMappingType tmt, float *args){
+//***********************************************************************
+// Creates a tone mapper of the indicated type and with the arguments provided.
+//    Clamp:            setToneMapper(CLAMP, null)
+//    Equalize:         setToneMapper(EQUALIZE, {imageMax})
+//    EqualizeClamp:    setToneMapper(EQUALIZECLAMP, {V})
+//    Gamma:            setToneMapper(GAMMA, {imageMax, gamma})
+//    GammaClamp:       setToneMapper(CLAMPGAMMA, {V, gamma})
+//    Reinhard2002:     setToneMapper(REINHARD2002, null)
+//    Reinhard2005:     setToneMapper(REINHARD2005, {imageMax})
+// @param tmt Tone mapper technique to be used 
+// @param args Vector with the arguments required by the tone mapper
+//***********************************************************************
+ToneMapperPtr createToneMapper(ToneMappingType tmt, float* args){
     ToneMapperPtr tm;
     switch(tmt){
         case CLAMP:
@@ -150,14 +183,24 @@ ToneMapperPtr createToneMapper(ToneMappingType tmt, float *args){
             break;
         case REINHARD2002:
             tm = make_shared<Reinhard2002>();
+            break;
         case REINHARD2005:
             tm = make_shared<Reinhard2005>(args[0]);
+            break;
     }
     return tm;
 }
 
-
-void writeImage(Image& img, string outputFile, ToneMappingType tmt, int destinationColorRes, bool bmp, float *toneMapperArgs){
+//***********************************************************************
+// Writes the image to the specified output file
+// @param img Image to be written
+// @param outputFile Path of the output file
+// @param tmt Tone mapping technique to be used
+// @param destinationColorRes Color resolution of the output file
+// @param bmp When set to true, the output file will be in Bitmap format. Otherwise, HDR format.
+// @param toneMapperArgs Specifies arguments required by the tone mapper (see createToneMapper for more info)
+//***********************************************************************
+void writeImage(Image& img, string outputFile, ToneMappingType tmt, int destinationColorRes, bool bmp, float* toneMapperArgs){
 
     img.setToneMapper(createToneMapper(tmt, toneMapperArgs));
     img.setDestinationResolution(destinationColorRes);

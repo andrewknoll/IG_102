@@ -7,14 +7,17 @@
 #include "materials/Material.hpp"
 #include "Scene.hpp"
 #include "AreaLight.hpp"
-
+#include "globals.hpp"
 
 using ShapePtr = shared_ptr<Shape>;
 using namespace std;
 
+//Maximum float value
 const float MAX_float = numeric_limits<float>::max();
 
-
+//***********************************************************************
+// Ray implementation
+//***********************************************************************
 class Ray{
     private:
         Point origin;

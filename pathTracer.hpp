@@ -23,6 +23,9 @@
 
 using namespace std;
 
+//***********************************************************************
+// Path Tracer implementation
+//***********************************************************************
 class PathTracer{
     private:
         int current_width  = 0;

@@ -9,6 +9,9 @@
 
 using namespace std;
 
+//***********************************************************************
+// Scene's Camera implementation
+//***********************************************************************
 class Camera{
     private:
         Direction up, left, front; // Local camera coordinate system

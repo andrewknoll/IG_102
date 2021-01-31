@@ -8,23 +8,28 @@
 #include "../rng.hpp"
 #include "../vfield/Operations.hpp"
 
+//Number of possible events upon hitting a non-emitting object
 #define N_EVENTS 4
 
+//Enumeration containing all the possible material types
 enum MaterialType{
-    NONE, LIGHTSOURCE, DIFFUSE, PLASTIC, DIELECTRIC
+    NONE, LIGHTSOURCE, LAMBERTIAN, PLASTIC, DIELECTRIC, CUSTOM
 };
 
+//Enumeration containing all the possible events upon hitting an object
 enum Event : int{
     NO_EVENT=-1, ABSORPTION=0, DIFFUSION=1, SPECULAR=2, REFRACTION=3, LIGHTFOUND=4
 };
 
 Event& operator++(Event& e, int a);
 
-
+/**************************************************************
+ Image representation class
+ **************************************************************/
 class Material{
 
     private:
-        RGB emission;
+        RGB emission;   //Emission component
         RGB lambertian_coefficient;
         RGB specular_coefficient;
         RGB refraction_coefficient;
@@ -35,8 +40,8 @@ class Material{
         //cumulative probability of events
         float eP[N_EVENTS] = {1, 1, 1, 1};
 
-        Event russianRoulette(float K[4], bool init);
-        float getProb(Event e, RGB Pk[4]);
+        Event russianRoulette(float K[], bool init);
+        float getProb(Event e, RGB Pk[]);
         void getCoefficientsArray(RGB maxK[3]);
         float applySnell(RGB n0, RGB n1, float incident_angle);
         void recalculateWithFresnel(RGB k[3], float Pk[4], RGB n0, RGB n1, float incident_angle, float refraction_angle);
@@ -45,7 +50,7 @@ class Material{
         Material();
 
         void setAsLightSource(RGB emission);
-        void setAsDiffuse(RGB kl);
+        void setAsLambertian(RGB kl);
         void setAsPlastic(RGB kl, RGB ks);
         void setAsDielectric(float absorptionProb, RGB n);
         void setAsCustomMaterial(RGB kl, RGB ks, RGB kt);

@@ -53,16 +53,16 @@ Coordinates scale(Coordinates& coord, const float sx, const float sy, const floa
 Coordinates rotate(Coordinates& coord, const char axis, const float angle);
 
 template <class T>
-T baseChangeGeneric(T& coord, const Point o, const Direction u, const Direction v, const Direction w);
-Point baseChange(Point& coord, const Point o, const Direction u, const Direction v, const Direction w);
-Direction baseChange(Direction& coord, const Point o, const Direction u, const Direction v, const Direction w);
-Coordinates baseChange(Coordinates& coord, const Point o, const Direction u, const Direction v, const Direction w);
+T baseChangeGeneric(T& coord, const Direction u, const Direction v, const Direction w, const Point o);
+Point baseChange(Point& coord, const Direction u, const Direction v, const Direction w, const Point o);
+Direction baseChange(Direction& coord, const Direction u, const Direction v, const Direction w, const Point o);
+Coordinates baseChange(Coordinates& coord, const Direction u, const Direction v, const Direction w, const Point o);
 
 template <class T>
-T baseChangeGenericInverse(T& coord, const Point o, const Direction u, const Direction v, const Direction w);
-Point baseChangeInverse(Point& coord, const Point o, const Direction u, const Direction v, const Direction w);
-Direction baseChangeInverse(Direction& coord, const Point o, const Direction u, const Direction v, const Direction w);
-Coordinates baseChangeInverse(Coordinates& coord, const Point o, const Direction u, const Direction v, const Direction w);
+T baseChangeGenericInverse(T& coord, const Direction u, const Direction v, const Direction w, const Point o);
+Point baseChangeInverse(Point& coord, const Direction u, const Direction v, const Direction w, const Point o);
+Direction baseChangeInverse(Direction& coord, const Direction u, const Direction v, const Direction w, const Point o);
+Coordinates baseChangeInverse(Coordinates& coord, const Direction u, const Direction v, const Direction w, const Point o);
 
 bool solveQuadraticEquation(float a, float b, float c, float results[2]);
 float distance(Point a, Point b);

@@ -6,6 +6,9 @@
 #include "../vfield/Operations.hpp"
 #include <memory>
 
+//***********************************************************************
+// Abstract Shape class. From this one, all kinds of shapes should derive
+//***********************************************************************
 class Shape{
     protected:
         static long nextID;
@@ -15,7 +18,6 @@ class Shape{
     public:
         virtual int findIntersectionWithLine(Direction d, Point o, float result[])=0;
         virtual Direction getNormalAtPoint(Point p) = 0;
-        virtual void calculateTangentsAtPoint(Point p, Direction& t1, Direction& t2)=0;
         Material getMaterial();
         void setMaterial(Material material);
         long getID();

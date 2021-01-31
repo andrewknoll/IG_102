@@ -6,6 +6,9 @@
 
 using namespace std;
 
+//***********************************************************************
+// 4x4 Matrix implementation
+//***********************************************************************
 class Matrix4{
     private:
         float m[4][4];
@@ -30,6 +33,9 @@ class Matrix4{
         void setColumn(const int j, const float c[4]);
 };
 
+//***********************************************************************
+// Exception class, when an inverse matrix was tried to be calculated and there was no exception
+//***********************************************************************
 class NoInverseException{
     private:
         Matrix4 mat;

@@ -6,7 +6,11 @@
 #include "../vfield/Operations.hpp"
 #include "../vfield/Direction.hpp"
 #include "../vfield/Point.hpp"
+#include "../globals.hpp"
 
+//***********************************************************************
+// Plane implementation class, from its normal and a distance to the world origin
+//***********************************************************************
 class Plane : public Shape{
     protected:
         int distanceToOrigin;
@@ -17,9 +21,6 @@ class Plane : public Shape{
         void setAll(float coord[3], int distance);
         int findIntersectionWithLine(Direction d, Point o, float result[]);
         Direction getNormalAtPoint(Point p);
-        void calculateTangentsAtPoint(Point p, Direction& t1, Direction& t2);
-
-        Point getRandomPoint();
     
 };
 

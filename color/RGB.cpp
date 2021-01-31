@@ -1,21 +1,40 @@
 #include "RGB.hpp"
 
+//***********************************************************************
+// Default contructor.
+// Initial values are (0,0,0)
+//***********************************************************************
 RGB::RGB(){
     red = 0;
     green = 0;
     blue = 0;
 }
 
+//***********************************************************************
+// Class constructor.
+// @param red Red value of the triplet.
+// @param green Green value of the triplet.
+// @param blue Blue value of the triplet.
+//***********************************************************************
 RGB::RGB(float red, float green, float blue){
     this->red = red;
     this->green = green;
     this->blue = blue;
 }
 
+//***********************************************************************
+// Prints a string with format (R, G, B)
+// through standard output for debug purposes
+//***********************************************************************
 void RGB::toString(){
     cout << red << " " << green << " " << blue;
 }
 
+//***********************************************************************
+// Returns the value of specified component of the triplet
+// @param i Index of the component
+// @returns Value of the i'th component of the triplet
+//***********************************************************************
 float RGB::operator[](const int i) const{
     float res = 0;
     switch(i){
@@ -32,6 +51,11 @@ float RGB::operator[](const int i) const{
     return res;
 }
 
+//***********************************************************************
+// Returns a reference to the specified component of the triplet
+// @param i Index of the component
+// @returns A reference to the i'th component of the triplet. If i > 3, returns re1
+//***********************************************************************
 float& RGB::operator[](const int i){
     switch(i){
         case 0:
@@ -41,14 +65,22 @@ float& RGB::operator[](const int i){
         case 2:
             return blue;
     }
+    return red;
 }
 
+//***********************************************************************
+// Resets triplet values to (0,0,0)
+//***********************************************************************
 void RGB::reset(){
     red = 0;
     green = 0;
     blue = 0;
 }
 
+//***********************************************************************
+// Returns max value
+// @returns maximum value of the triplet.
+//***********************************************************************
 float RGB::max(){
     float r = red;
     if(r < green){
@@ -60,6 +92,66 @@ float RGB::max(){
     return r;
 }
 
+//***********************************************************************
+// Add operator.
+// @param b Second operand
+// @returns A triplet representing the sum of both the triplets
+//***********************************************************************
+RGB RGB::operator+(RGB b){
+    return RGB(red+b[0], green+b[1], blue+b[2]);
+}
+
+//***********************************************************************
+// Substract operator.
+// @param b Second operand
+// @returns A triplet representing the substraction of the left operand and the right.
+//***********************************************************************
+RGB RGB::operator-(RGB b){
+    return RGB(red-b[0], green-b[1], blue-b[2]);
+}
+
+//***********************************************************************
+// Product operator.
+// @param b Second operand
+// @returns A triplet representing whose values are the products of the components one to one of both operands
+//***********************************************************************
+RGB RGB::operator*(RGB b){
+    return RGB(red*b[0], green*b[1], blue*b[2]);
+}
+
+//***********************************************************************
+// Product operator with a real value.
+// @param b Real value (Second operand)
+// @returns A triplet representing the product of all the components by the real value.
+//***********************************************************************
+RGB RGB::operator*(float b){
+    return RGB(red*b, green*b, blue*b);
+}
+
+//***********************************************************************
+// Division operator with a real value.
+// @param b Real value (Second operand)
+// @returns A triplet representing the division of all the components by the real value.
+//***********************************************************************
+RGB RGB::operator/(float b){
+    return RGB(red/b, green/b, blue/b);
+}
+
+//***********************************************************************
+// Division operator.
+// @param b Second operand
+// @returns A triplet representing whose values are the divisions of the components one to one of both operands
+//***********************************************************************
+RGB RGB::operator/(RGB b){
+    return RGB(red/b[0], green/b[1], blue/b[2]);
+}
+
+//***********************************************************************
+// Returns the triplet representing the mean of the values of the all the triplets
+// @param v Vector containing all the RGB tuples
+// @returns average value of all the RGB tuples
+// @relatealso RGB
+//***********************************************************************
 RGB calculateRGBMean(vector<RGB> v){
     float results[3] = {0, 0, 0};
     int size = v.size();
@@ -69,34 +161,4 @@ RGB calculateRGBMean(vector<RGB> v){
         }
     }
     return RGB(results[0] / size, results[1] / size, results[2] / size);
-}
-
-//operator used for coefficient sums
-RGB RGB::operator+(RGB b){
-    return RGB(red+b[0], green+b[1], blue+b[2]);
-}
-
-//operator used for coefficient sums
-RGB RGB::operator-(RGB b){
-    return RGB(red-b[0], green-b[1], blue-b[2]);
-}
-
-//operator used for coefficient products
-RGB RGB::operator*(RGB b){
-    return RGB(red*b[0], green*b[1], blue*b[2]);
-}
-
-//operator used for coefficient products
-RGB RGB::operator*(float b){
-    return RGB(red*b, green*b, blue*b);
-}
-
-//operator used for coefficient products
-RGB RGB::operator/(float b){
-    return RGB(red/b, green/b, blue/b);
-}
-
-//operator used for coefficient products
-RGB RGB::operator/(RGB b){
-    return RGB(red/b[0], green/b[1], blue/b[2]);
 }

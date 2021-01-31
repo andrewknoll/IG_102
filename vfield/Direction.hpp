@@ -3,6 +3,9 @@
 #ifndef __DIRECTION__
 #define __DIRECTION__
 
+//***********************************************************************
+// 3x3 Direction / Vector implementation (with Homogenous coordinate)
+//***********************************************************************
 class Direction : public Coordinates{
 
     public:

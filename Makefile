@@ -1,11 +1,10 @@
 CC=g++
-CFLAGS=-Wall -ggdb -std=c++11 -pthread
-DEBUGFLAGS=-Wall -ggdb -std=c++11 -pthread
+CFLAGS=-std=c++11 -pthread -O3
 img=Image
 imgDir=imaging
 colorDir=color
 rgb=RGB
-main=test
+main=main
 shapeDir=shapes
 plane=Plane
 shape=Shape
@@ -34,7 +33,7 @@ al=AreaLight
 
 ##link
 $(main):  $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(sphere).o $(scene).o $(shape).o $(camera).o $(ray).o $(rgb).o $(oper).o $(material).o $(pathTr).o $(lp).o $(al).o $(iw).o $(clamp).o $(equClamp).o $(cgamma).o $(rein02).o $(rein05).o $(main).o
-	$(CC) $(DEBUGFLAGS) $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(shape).o $(sphere).o $(scene).o $(camera).o $(ray).o $(rgb).o $(oper).o $(material).o $(pathTr).o $(lp).o $(al).o $(iw).o $(clamp).o $(equClamp).o $(cgamma).o $(rein02).o $(rein05).o $(main).o -o $(main)
+	$(CC) $(CFLAGS) $(dir).o $(point).o $(coord).o $(matrix).o $(img).o $(plane).o $(shape).o $(sphere).o $(scene).o $(camera).o $(ray).o $(rgb).o $(oper).o $(material).o $(pathTr).o $(lp).o $(al).o $(iw).o $(clamp).o $(equClamp).o $(cgamma).o $(rein02).o $(rein05).o $(main).o -o $(main)
 
 ##compile
 $(iw).o: $(colorDir)/$(iw).cpp
@@ -56,7 +55,7 @@ $(rein05).o: $(colorDir)/$(rein05).cpp
 	$(CC) $(CFLAGS) $(colorDir)/$(rein05).cpp -c 
 
 $(rgb).o: $(colorDir)/$(rgb).cpp $(colorDir)/$(rgb).hpp
-	$(CC) $(DEBUGFLAGS) $(colorDir)/$(rgb).cpp -c 
+	$(CC) $(CFLAGS) $(colorDir)/$(rgb).cpp -c 
 
 $(img).o: $(imgDir)/$(img).cpp $(imgDir)/$(img).hpp
 	$(CC) $(CFLAGS) $(imgDir)/$(img).cpp -c 
@@ -71,7 +70,7 @@ $(sphere).o: $(shapeDir)/$(sphere).cpp
 	$(CC) $(CFLAGS) $(shapeDir)/$(sphere).cpp -c 
 
 $(material).o: $(matDir)/$(material).cpp
-	$(CC) $(DEBUGFLAGS) $(matDir)/$(material).cpp -c 
+	$(CC) $(CFLAGS) $(matDir)/$(material).cpp -c 
 
 $(scene).o: $(scene).cpp
 	$(CC) $(CFLAGS) $(scene).cpp -c 
@@ -80,7 +79,7 @@ $(camera).o: $(camera).cpp
 	$(CC) $(CFLAGS) $(camera).cpp -c 
 
 $(ray).o: $(ray).cpp
-	$(CC) $(DEBUGFLAGS) $(ray).cpp -c 
+	$(CC) $(CFLAGS) $(ray).cpp -c 
 
 $(lp).o: $(lp).cpp
 	$(CC) $(CFLAGS) $(lp).cpp -c 
@@ -101,10 +100,10 @@ $(matrix).o: $(vfieldDir)/$(matrix).cpp
 	$(CC) $(CFLAGS) $(vfieldDir)/$(matrix).cpp -c 
 
 $(pathTr).o: $(pathTr).cpp
-	$(CC) $(DEBUGFLAGS) $(pathTr).cpp -c 
+	$(CC) $(CFLAGS) $(pathTr).cpp -c 
 
 $(oper).o: $(vfieldDir)/$(oper).cpp
-	$(CC) $(DEBUGFLAGS) $(vfieldDir)/$(oper).cpp -c 
+	$(CC) $(CFLAGS) $(vfieldDir)/$(oper).cpp -c 
 
 $(main).o: $(main).cpp
 	$(CC) $(CFLAGS) $(main).cpp -c 

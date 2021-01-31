@@ -7,6 +7,9 @@
 
 using namespace std;
 
+/**************************************************************
+ Implementation of Red Green Blue triplets
+ **************************************************************/
 class RGB{
     private:
         float red, green, blue;

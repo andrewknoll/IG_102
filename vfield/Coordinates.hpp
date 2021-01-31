@@ -7,6 +7,9 @@
 
 using namespace std;
 
+//***********************************************************************
+// Generic Coordinates implementation
+//***********************************************************************
 class Coordinates{
     protected:
         float c[4];

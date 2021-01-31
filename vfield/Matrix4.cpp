@@ -1,6 +1,8 @@
 #include "Matrix4.hpp"
 
-//Set to identity matrix
+//***********************************************************************
+// Sets this matrix to an identity 4x4 matrix
+//***********************************************************************
 void Matrix4::identity(){
     for(int i = 0; i < 4; i++){
         for(int j = 0; j < 4; j++){
@@ -9,6 +11,11 @@ void Matrix4::identity(){
     }
 }
 
+//***********************************************************************
+// Returns the determinant of a 3x3 matrix
+// @param mat[3][3] 3x3 array
+// @returns the determinant of the matrix formed by the values in mat
+//***********************************************************************
 float Matrix4::det3(float mat[3][3]){
     return mat[0][0] * mat[1][1] * mat[2][2] 
          + mat[1][0] * mat[2][1] * mat[0][2] 
@@ -18,6 +25,11 @@ float Matrix4::det3(float mat[3][3]){
          - mat[2][2] * mat[0][1] * mat[1][0];
 }
 
+//***********************************************************************
+// Returns the determinant of this matrix. If it hadn't been previously calculated,
+// it is calculated.
+// @returns the determinant of this matrix
+//***********************************************************************
 float Matrix4::det(){
     float det = 0.0;
     if(detCalculated) det = determinant;
@@ -40,6 +52,12 @@ float Matrix4::det(){
     return det;
 }
 
+//***********************************************************************
+// Returns the inverse of this matrix, or throws an exception if the matrix has
+// no inverse. Uses the adjunct matrix method.
+// @throws NoInverseException if matrix has no exception
+// @returns The inverse of this matrix
+//***********************************************************************
 Matrix4 Matrix4::inverse(){
     Matrix4 adjunct;
     float aux[3][3];
@@ -76,6 +94,7 @@ Matrix4 Matrix4::inverse(){
             }
         }
     }
+    //Saves determinant if it hadn't been previously calculated
     if(!detCalculated){
         determinant = det;
         detCalculated = true;
@@ -86,6 +105,12 @@ Matrix4 Matrix4::inverse(){
     return (1.0/det) * adjunct;
 }
 
+//***********************************************************************
+// Removes a row and a column from this matrix and stores it in a 3x3 array
+// @param iR Row to be removed
+// @param jR Column to be removed
+// @param mat[3][3] Matrix where the new 3x3 matrix will be stored (resulting of removing row iR and column jR from this matrix)
+//***********************************************************************
 void Matrix4::removeRowColumn(int iR, int jR, float mat[3][3]){
     int aux_i = 0, aux_j = 0;
     for(int i = 0; i < 4; i++){
@@ -102,12 +127,21 @@ void Matrix4::removeRowColumn(int iR, int jR, float mat[3][3]){
     }
 }
 
-//Array access operator
+//***********************************************************************
+// @param i Horizontal component
+// @param j Vertical component
+// @returns The value of the ij component of this matrix
+//***********************************************************************
 float Matrix4::get(const int i, const int j) const{
     return m[i][j];
 }
 
-//add algorithm for 2x2 matrices
+//***********************************************************************
+// Adds two 2x2 matrices
+// @param a[2][2] first matrix
+// @param b[2][2] second matrix
+// @param c[2][2] Will store the result of adding a + b
+//***********************************************************************
 void Matrix4::add2(const float a[2][2], const float b[2][2], float c[2][2]){
     c[0][0] = a[0][0] + b[0][0];
     c[0][1] = a[0][1] + b[0][1];
@@ -115,7 +149,12 @@ void Matrix4::add2(const float a[2][2], const float b[2][2], float c[2][2]){
     c[1][1] = a[1][1] + b[1][1];
 }
 
-//substract algorithm for 2x2 matrices
+//***********************************************************************
+// Substracts two 2x2 matrices
+// @param a[2][2] first matrix
+// @param b[2][2] second matrix
+// @param c[2][2] Will store the result of performing a - b
+//***********************************************************************
 void Matrix4::substract2(const float a[2][2], const float b[2][2], float c[2][2]){
     c[0][0] = a[0][0] - b[0][0];
     c[0][1] = a[0][1] - b[0][1];
@@ -123,7 +162,11 @@ void Matrix4::substract2(const float a[2][2], const float b[2][2], float c[2][2]
     c[1][1] = a[1][1] - b[1][1];
 }
 
-//Matrix * Matrix operator
+//***********************************************************************
+// Calculates the product of two 4x4 matrices. Uses Divide And Conquer algorithm
+// @param operand second matrix
+// @returns The product of this matrix * operand
+//***********************************************************************
 Matrix4 Matrix4::operator* (const Matrix4& operand){
     Matrix4 res;
 
@@ -214,8 +257,12 @@ Matrix4 Matrix4::operator* (const Matrix4& operand){
 
 }
 
-//Multiplication of two 2x2 matrices using Strassen's algorithm
-//Stores the result in "c"
+//***********************************************************************
+// Multiplies two 2x2 matrices using Strassen's algorithm
+// @param a[2][2] first matrix
+// @param b[2][2] second matrix
+// @param c[2][2] Will store the result of performing a * b
+//***********************************************************************
 void Matrix4::strassen2 (const float a[2][2], const float b[2][2], float c[2][2]){
     float aux[7];
 
@@ -233,7 +280,11 @@ void Matrix4::strassen2 (const float a[2][2], const float b[2][2], float c[2][2]
     c[1][1] = aux[0] - aux[1] + aux[2] + aux[5];
 }
 
-//Obtains a 2x2 matrix in "sub"
+//***********************************************************************
+// Returns a 2x2 matrix corresponding to a 2x2 corner of "quadrant" of this 4x4 matrix
+// @param part The "quadrant" to be returned
+// @param sun[2][2] Will store the indicated quadrant
+//***********************************************************************
 void Matrix4::quarter(const int part, float sub[2][2]) const{
     int i0 = part / 2;  //Row of submatrices
     int j0 = part % 2;  //Column of submatrices
@@ -246,27 +297,49 @@ void Matrix4::quarter(const int part, float sub[2][2]) const{
         }
     } 
 }
-
-//Sets component i,j of matrix m to value n
+//***********************************************************************
+// Sets component i,j of tihs matrix to value n
+// @param i Horizontal component
+// @param j Vertical component
+// @param n New value
+//***********************************************************************
 void Matrix4::set(const int i, const int j, const float n){
     m[i][j] = n;
 }
 
+//***********************************************************************
 //Sets column j of matrix m to c
+// @param j Column
+// @param c Array containing the new value for row j
+//***********************************************************************
 void Matrix4::setColumn(const int j, const float c[4]){
     for(int i = 0; i < 4; i++){
         m[i][j] = c[i];
     }
 }
 
+//***********************************************************************
+// Class constructor
+// @param mat Matrix that caused the exception
+//***********************************************************************
 NoInverseException::NoInverseException(const Matrix4& mat){
     this->mat = mat;
 }
 
+//***********************************************************************
+// Returns the message of the exception
+//***********************************************************************
 const char* NoInverseException::what() const{
     return "Matrix has no inverse";
 }
 
+//***********************************************************************
+// Multiplies a matrix by a scalar
+// @param scalar The scalar
+// @param mat The matrix
+// @returns A matrix with the result of performing scalar * mat
+// @relatealso Matrix4
+//***********************************************************************
 Matrix4 operator* (const float scalar, Matrix4 mat){
     Matrix4 result;
     for(int i = 0; i < 4; i++){
@@ -277,6 +350,13 @@ Matrix4 operator* (const float scalar, Matrix4 mat){
     return result;
 }
 
+//***********************************************************************
+// Prints on the specified output stream the matrix, surrounded by "|"
+// @param os An output stream
+// @param mat Some matrix
+// @relatealso Matrix4
+// @returns A reference to ostram os (allows for concatenation of operations)
+//***********************************************************************
 ostream& operator<<(ostream& os, const Matrix4& mat){
     for(int i = 0; i < 4; i++){
         cout << "|" << flush;

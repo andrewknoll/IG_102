@@ -3,10 +3,14 @@
 
 #include "ToneMapper.hpp"
 
-//Equalize() = EqualizeAndClamp(img.getMaxFound())
+/**************************************************************
+ Equalizing and clamping tone mapping techniques class
+ **************************************************************/
 class EqualizeAndClamp: public ToneMapper{
 
     private:
+        //Maximum value that will not be clamped.
+        //Higher values will be clamped to 1.
         float V = 1.0;
 
     public:

@@ -13,6 +13,9 @@
 
 using namespace std;
 
+//***********************************************************************
+// Scene for ray/path tracer implementation
+//***********************************************************************
 class Scene{
     private:
         int height, width; // Size (in pixels) of the projection plane

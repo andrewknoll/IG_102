@@ -6,7 +6,9 @@
 #include "../vfield/Direction.hpp"
 #include "../vfield/Point.hpp"
 #include "../vfield/Operations.hpp"
-
+//***********************************************************************
+// Sphere implementation class, from an axis and a center
+//***********************************************************************
 class Sphere : public Shape{
     protected:
         Direction axis;

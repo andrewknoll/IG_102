@@ -3,6 +3,9 @@
 #include "color/RGB.hpp"
 #include "vfield/Point.hpp"
 
+//***********************************************************************
+// Light point implementation
+//***********************************************************************
 class LightPoint{
     private:
         RGB emission;

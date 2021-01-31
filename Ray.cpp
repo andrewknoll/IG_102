@@ -1,24 +1,46 @@
 #include "Ray.hpp"
 
-#define EPSILON 0.0001
-
+//***********************************************************************
+// @returns Ray's direction
+//***********************************************************************
 Direction Ray::getDirection(){
     return this->dir;
 }
 
+//***********************************************************************
+// Sets the direction of this ray
+// @param dir New direction for the ray
+//***********************************************************************
 void Ray::setDirection(Direction dir){
     this->dir = dir;
 }
 
+//***********************************************************************
+// Sets the origin of this ray
+// @param dir New origin for the ray
+//***********************************************************************
 void Ray::setOrigin(Point origin){
     this->origin = origin;
 }
 
-
+//***********************************************************************
+// Finds the intersection of this ray with the shape
+// @param shape Smart pointer to the shape
+// @param solutions[] Array that will store the factor of the intersections (if any)
+// @returns Number of intersections
+//***********************************************************************
 int Ray::findIntersectionWith(ShapePtr shape, float solutions[]){
     return shape->findIntersectionWithLine(dir, origin, solutions);
 }
 
+//***********************************************************************
+// Calculates the direct contribution of a light point
+// @param scene The scene the ray is being casted at
+// @param light Will be modified with the contribution of the light point
+// @param destination Light point whose contribution will be calculated
+// @param lastShape Smart pointer with the shape the shadow ray is being casted from
+// @returns NO_EVENT if an obstacle was found. Otherwise, LIGHTFOUND
+//***********************************************************************
 Event Ray::getShadowRayResult(Scene& scene, RGB& light, LightPoint destination, ShapePtr lastShape){
     ShapePtr closestShape = nullptr;
     ShapePtr shape;
@@ -41,12 +63,19 @@ Event Ray::getShadowRayResult(Scene& scene, RGB& light, LightPoint destination, 
         }
     }
     if(!foundObstacle){
-        //Mirar con calma
         light = light + destination.getEmission() * max(lastShape->getNormalAtPoint(this->origin) * this->dir, 0.0f) * lastShape->getMaterial().getCoefficient(DIFFUSION) / (dist * dist * M_PI);
     }
     return foundObstacle ? NO_EVENT : LIGHTFOUND;
 }
 
+//***********************************************************************
+// Calculates the direct contribution of all light points
+// @param scene The scene the ray is being casted at
+// @param light Will be modified with the contribution of the light point
+// @param origin Origin of the shadow rays
+// @param lastShape Smart pointer with the shape the shadow ray is being casted from
+// @returns NO_EVENT if no change was made. Otherwise, LIGHTFOUND
+//***********************************************************************
 Event Ray::castShadowRays(Scene& scene, RGB& light, Point origin, ShapePtr lastShape){
     Ray shadowRay;
     shadowRay.setOrigin(origin);
@@ -63,8 +92,13 @@ Event Ray::castShadowRays(Scene& scene, RGB& light, Point origin, ShapePtr lastS
     return e;
 }
 
-
+//***********************************************************************
+// Calculates the result of tracing a ray until it gets absorbed, finds a light or nothing was found
+// @param scene The scene the ray is being casted at
+// @returns The RGB tuple containing the color that was calculated
+//***********************************************************************
 RGB Ray::getRayResult(Scene& scene){
+    //Variable initializations
     RGB result= RGB(0,0,0), factor = RGB(1,1,1), indirectLight= RGB(0,0,0), directLight = RGB(0,0,0), directBounce= RGB(0,0,0), preFactor= RGB(1,1,1);
     float solutions[2];
     int nShapes = scene.shapeN();
@@ -89,10 +123,14 @@ RGB Ray::getRayResult(Scene& scene){
     bool initialized = false;
     Event lastEvent = NO_EVENT, shadowEvent = NO_EVENT;
 
+    //Bounce
     do{
-        preFactor = factor;
+        preFactor = factor; //prefactor will always contain the throughput before the current bounce was added
         closestShape = nullptr;
         minT = MAX_float;
+
+        //---------------------------------------------------------------------------------------------------
+        //Calculate nearest intersection    
         for(int s = 0; s < nShapes; s++){ //Iterate through all shapes in scene
             shape = scene.getShape(s);
             nIntersections = findIntersectionWith(shape, solutions); //Find intersection with ray
@@ -107,19 +145,23 @@ RGB Ray::getRayResult(Scene& scene){
                 }
             }
         }
+        //---------------------------------------------------------------------------------------------------
+        //Calculate intersections with Area Lights
         for(int al = 0; al < nAreaLights; al++){
             area = scene.getAreaLight(al);
             nIntersections = area.findIntersectionWithLine(dir, origin, solutions);
             if(nIntersections > 0 ){
                 if(minT > solutions[0] && solutions[0] >= EPSILON){
                     minT = solutions[0];
+                    //Clear closest shape and set the variables to indicate we've found a light
                     closestShape = nullptr;
                     lastEvent = LIGHTFOUND;
                     foundAreaLight = true;
                 }
             }
         }
-
+        //---------------------------------------------------------------------------------------------------
+        //Get intersection results
         if(foundAreaLight){
             indirectLight = area.getEmission();
             lastEvent = LIGHTFOUND;
@@ -130,6 +172,7 @@ RGB Ray::getRayResult(Scene& scene){
             intersection = minT * dir + origin;
             normal = closestShape->getNormalAtPoint(intersection);
 
+            //Calculate tangents
             t1 = cross(normal, up);
             if(t1.isNull()){
                 t1 = cross(normal, left);
@@ -137,6 +180,9 @@ RGB Ray::getRayResult(Scene& scene){
             t1.normalize();
             t2 = cross(normal, t1);
             t2.normalize();
+            
+            //-------------------------------------------------------
+            //Calculate bounce light contribution
             lastEvent = material.calculateRayCollision(factor,
                                                       indirectLight,
                                                       dir,
@@ -146,9 +192,13 @@ RGB Ray::getRayResult(Scene& scene){
                                                       t1,
                                                       t2,
                                                       initialized);
+
+            //-------------------------------------------------------
+            //Set the new values for the rays
             setDirection(newDirection);
             setOrigin(intersection);
 
+            //-------------------------------------------------------
             //Next Event Estimation
             if(lastEvent == DIFFUSION){
                 shadowEvent = castShadowRays(scene, directBounce, intersection, lastShape);
@@ -165,6 +215,8 @@ RGB Ray::getRayResult(Scene& scene){
     }while(closestShape != nullptr && lastEvent != ABSORPTION && lastEvent != LIGHTFOUND);
     //bounce when we have found something to bounce on, and neither a light source was found nor the ray was absorbed
 
+    //---------------------------------------------------------------------------------------------------
+    //Calculate final RGB tuple
     if(lastEvent == LIGHTFOUND){
         if(initialized){
             result = factor * indirectLight + directLight;
