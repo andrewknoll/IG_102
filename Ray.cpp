@@ -50,16 +50,18 @@ Event Ray::getShadowRayResult(Scene& scene, RGB& light, LightPoint destination, 
     bool foundObstacle = false;
     int nIntersections;
     float dist = distance(origin, destination.getLocalization());
+    float dist2;
     
     for(int s = 0; s < nShapes && !foundObstacle; s++){ //Iterate through all shapes in scene
         shape = scene.getShape(s);
         nIntersections = findIntersectionWith(shape, solutions); //Find intersection with ray
                     
         for(int i = 0; i < nIntersections && !foundObstacle; i++){   //Loop through intersections
-
+            //safe check, in case direction is not normalized
+            dist2 = (solutions[i] * dir).modulus();
             //foundObstacle = there was something in a distance smaller or equal to the distance to the destination,
             //and larger than 0, and the collision wasn't produced with the same shape it originated
-            foundObstacle |= (dist >= solutions[i] && solutions[i] >= EPSILON);
+            foundObstacle |= (dist >= dist2 && solutions[i] >= EPSILON);
         }
     }
     if(!foundObstacle){

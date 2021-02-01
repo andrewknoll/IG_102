@@ -27,7 +27,7 @@ typedef unsigned char byte;
 
 //Enumeration with all the types of tone mapping techniques that can be applied to the images.
 enum ToneMappingType : int{
-    CLAMP=0, EQUALIZE=1, EQUALIZECLAMP=2, GAMMA=3, CLAMPGAMMA=4, REINHARD2002=5, REINHARD2005=6
+    CLAMP=0, EQUALIZE=1,EQUALIZECLAMP=2, GAMMA=3, CLAMPGAMMA=4, REINHARD2002=5, REINHARD2005=6
 };
 
 //    Clamp:            setToneMapper(CLAMP, null)

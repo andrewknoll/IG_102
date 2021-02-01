@@ -25,10 +25,13 @@ Event Material::russianRoulette(float K[], bool init){
     Event e = ABSORPTION;
     if(K[0] < 1 && !init){
         xi += K[0];
+        if(xi > 1){
+            xi = 1;
+        }
     }
-    while(e < N_EVENTS){
+    while(e < N_EVENTS - 1){
         //if the random number falls in the range of event e, we return that event e
-        if(xi < K[e]) break;
+        if(xi <= K[e]) break;
         e++;
     }
 
@@ -78,17 +81,17 @@ float Material::getProb(Event e, RGB k[3]){
 // @param refraction_angle Angle of refraction, calculated by Snell's law
 //***********************************************************************
 void Material::recalculateWithFresnel(RGB k[3], float Pk[], RGB n0, RGB n1, float incident_angle, float refraction_angle){
-    float cosine = cosf(incident_angle);
+    float cosine_in = cosf(incident_angle);
+    float cosine_out = cosf(refraction_angle);
     //This would mean the normal is flipped with respect to where the ray is coming from
     //(most likely the ray is "inside" the shape)
-    if(cosine < 0) cosine = -cosine;
-    RGB t0 = n1 * cosine, t1 = n0*cosf(refraction_angle);
-    RGB t2 = n0 * cosine, t3 = n1*cosf(refraction_angle);
+    if(cosine_in < 0) cosine_in = -cosine_in;
+    if(cosine_out < 0) cosine_out = -cosine_out;
+    RGB t0 = n1 * cosine_in, t1 = n0*cosine_out;
+    RGB t2 = n0 * cosine_in, t3 = n1*cosine_out;
     RGB par = (t0 - t1) / (t0 + t1), per = (t2 - t3) / (t2 + t3);
 
-    float sine2 = (n0.max()/n1.max()) * (n0.max()/n1.max()) * (1- cosine * cosine);
-
-    if(sine2 < 1){ 
+    if(cosine_out > EPSILON){ 
         k[1] = (par*par + per*per) / 2;
         k[2] = RGB(1,1,1) - k[1];
     }
@@ -314,7 +317,8 @@ Event Material::calculateRayCollision(RGB& tp, RGB& il, Direction rd, Direction&
 
         //Apply Fresnel Equations
         if(type == DIELECTRIC){
-            float incident_angle;
+            //Snell's Law is applied taking the negative angle into account
+            float incident_angle = -findAngle(rd, normal);
             if(normal * rd<0){
                 //Dot product is negative when the angle is in the second or third quadrant
                 //Which means one of the components of the vectors is in the opposite sense
@@ -329,7 +333,8 @@ Event Material::calculateRayCollision(RGB& tp, RGB& il, Direction rd, Direction&
                 n1 = RGB(1,1,1);
             }
             
-            incident_angle = findAngle(rd, normal);
+            
+
             recalculateWithFresnel(k, acc_k, n0, n1, incident_angle, applySnell(n0, n1, incident_angle));
         }
         //Do russian roulette with Fresnel's results (if Fresnel was not apply, normal probabilities will be used)
@@ -366,6 +371,7 @@ Event Material::calculateRayCollision(RGB& tp, RGB& il, Direction rd, Direction&
                 if(cosine < 0){ //cosine must be positive
                     cosine = -cosine;
                 }
+
                 float sine2thetaT = n*n * (1- cosine * cosine);
 
                 if(sine2thetaT > 1){    //Total Internal Reflection

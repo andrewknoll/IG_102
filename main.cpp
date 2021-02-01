@@ -10,7 +10,7 @@
 #include "color/ImageWriter.hpp"
 #include <memory>
 #include "globals.hpp"
-
+#include <chrono>
 #define N_SCENES 3
 
 using ScenePtr = shared_ptr<Scene>;
@@ -20,24 +20,24 @@ using ScenePtr = shared_ptr<Scene>;
 // @returns a pointer to the described scene
 //***********************************************************************
 ScenePtr scene1(){
-    Direction a(0, 0, 25);
-    Point p(0, 0, 70);
-    Point point2(17, 0, 60);
-    Point point3(-30, 0, 90);
-    RGB rgb(0.9, 0 , 0);
-    Point o(0, 0, -6);
-    RGB black(0, 0, 0);
+    RGB rgb1(0,0,0.9);
+    RGB refrac(1.5,1.5,1.5);
+    RGB rgb2(0.3,0.3,0);
+    RGB e(10,10,10);
+    RGB rgb5(0.6,0.6,0.6);
 
-    Direction n(0, 0, -1);
-    RGB rgb4(0, 0.5, 0.5);
+    Point o(0,0,0);
+    Direction a(0,3,0);
 
-    RGB rgb2(0.25, 0.75, 0.16);
-    RGB rgb5(0.25, 1, 0.16);
-    RGB rgb3(1, 1, 1);
-    RGB refrac(1.3, 1.3, 1.3);
+    Point p1(0,-1,5);
+    Point p2(-1,-1,4);
+    Point p3(1,-1,3);
+
+    Direction n(0,0.1,1);
+
 
     Material diffuse;
-    diffuse.setAsLambertian(rgb);
+    diffuse.setAsLambertian(rgb1);
 
     Material dielectric;
     dielectric.setAsDielectric(0.1, refrac);
@@ -46,25 +46,25 @@ ScenePtr scene1(){
     plastic.setAsPlastic(rgb2, rgb5);
 
     Material emission;
-    emission.setAsLightSource(rgb3);
+    emission.setAsLightSource(e);
 
     ScenePtr scene = make_shared<Scene>(400, 400);
     scene->buildCameraFromVFOV(M_PI/2, o);
 
-    shared_ptr<Sphere> p1 = make_shared<Sphere>(a, p);
-    shared_ptr<Plane> p2 = make_shared<Plane>(n, 20);
-    shared_ptr<Sphere> p3 = make_shared<Sphere>(a, point2);
-    shared_ptr<Sphere> p4 = make_shared<Sphere>(a, point3);
+    shared_ptr<Sphere> s1 = make_shared<Sphere>(a, p1);
+    shared_ptr<Plane> s2 = make_shared<Plane>(n, 20);
+    shared_ptr<Sphere> s3 = make_shared<Sphere>(a, p2);
+    shared_ptr<Sphere> s4 = make_shared<Sphere>(a, p3);
 
-    p1->setMaterial(emission);
-    p2->setMaterial(plastic);
-    p3->setMaterial(diffuse);
-    p4->setMaterial(diffuse);
+    s1->setMaterial(emission);
+    s2->setMaterial(plastic);
+    s3->setMaterial(diffuse);
+    s4->setMaterial(diffuse);
 
-    scene->addShape(p1);
-    scene->addShape(p2);
-    scene->addShape(p3);
-    scene->addShape(p4);
+    scene->addShape(s1);
+    scene->addShape(s2);
+    scene->addShape(s3);
+    scene->addShape(s4);
 
     return scene;
 }
@@ -130,25 +130,25 @@ ScenePtr scene3(){
     ScenePtr scene = make_shared<Scene>(400, 400);
     scene->buildCameraFromHFOV(2*M_PI/5, Point(0,0,-3));
 
-    shared_ptr<Plane> floor = make_shared<Plane>(Direction(2, 2, -5), 27);
+    shared_ptr<Plane> floor = make_shared<Plane>(Direction(0.1, 5, 0.1), 2);
     shared_ptr<Sphere> sphere1 = make_shared<Sphere>(Direction(2, 0, 0), Point(-2, -1, 2));
     shared_ptr<Sphere> sphere2 = make_shared<Sphere>(Direction(0, 3, 0), Point(0, -0.5, 4));
     shared_ptr<Sphere> sphere3 = make_shared<Sphere>(Direction(0, 0, 1), Point(3, -0.75, 5));
     LightPoint lp(Point(-2, 2, -7), RGB(100, 100, 100));
 
-    Material plastic1;
-    plastic1.setAsPlastic(RGB(0.1,0.5,0.5), RGB(0.2,0.2,1));
-    Material plastic2;
-    plastic2.setAsPlastic(RGB(0.5,0.05,0.05), RGB(0.5,0.05,0.05));
-    Material plastic3;
-    plastic3.setAsPlastic(RGB(0.5,0.5,0.05), RGB(0.5,0.5,0.05));
-    Material plastic4;
-    plastic4.setAsPlastic(RGB(0.2,0.2,0.5), RGB(0.2,0.2,0.5));
+    Material plastic;
+    plastic.setAsPlastic(RGB(0.1,0.49,0.49), RGB(0.5,0.5,0.5));
+    Material lambertian1;
+    lambertian1.setAsLambertian(RGB(0.4,0.05,0.05));
+    Material lambertian2;
+    lambertian2.setAsLambertian(RGB(0.4,0.4,0.05));
+    Material lambertian3;
+    lambertian3.setAsLambertian(RGB(0.15,0.15,0.4));
 
-    floor->setMaterial(plastic1);
-    sphere1->setMaterial(plastic2);
-    sphere2->setMaterial(plastic3);
-    sphere3->setMaterial(plastic4);
+    floor->setMaterial(plastic);
+    sphere1->setMaterial(lambertian1);
+    sphere2->setMaterial(lambertian2);
+    sphere3->setMaterial(lambertian3);
 
     scene->addShape(floor);
     scene->addShape(sphere1);
@@ -221,7 +221,7 @@ int main(int argc, char* argv[]){
         }
         else if(strcmp("-tone-mapping", argv[i])==0){
             toneMapper = atoi(argv[++i]);
-            if(scene < 0 || scene >= N_TONEMAPPERS){
+            if(toneMapper < 0 || toneMapper >= N_TONEMAPPERS){
                 cerr << "Invalid tone mapper parameter" << endl;
                 exit(1);
             }
@@ -236,10 +236,6 @@ int main(int argc, char* argv[]){
         }
         else if(strcmp("-bmp", argv[i])==0){
             bmp = true;
-            if(scene < 0 || scene >= N_TONEMAPPERS){
-                cerr << "Invalid tone mapper parameter" << endl;
-                exit(1);
-            }
         }
         else if(strcmp("-color-resolution", argv[i])==0){
             colorRes = atoi(argv[++i]);
@@ -269,7 +265,12 @@ int main(int argc, char* argv[]){
     //Path trace
     Image img;
     img.setWidthHeight(width, height);
+
+    auto start = chrono::high_resolution_clock::now(); 
     pt.pathTrace(img, *s, rpp);
+    auto stop = chrono::high_resolution_clock::now(); 
+
+    auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
     if(toneMapper == EQUALIZE || toneMapper == GAMMA || toneMapper == REINHARD2005){
         tma1 = img.getMaxFound();
@@ -278,6 +279,8 @@ int main(int argc, char* argv[]){
     //Tone map and write to output
     float toneMapperArgs[2] = {tma1, tma2};
     writeImage(img, filename, (ToneMappingType)toneMapper, colorRes, bmp, toneMapperArgs);
+
+    cout << duration.count() << " Milliseconds\a" << endl;
 
     
 }

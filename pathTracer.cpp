@@ -80,6 +80,7 @@ void PathTracer::applyToSubimage(Image& img, Scene scene, int rpp, int subdivisi
     getSubdivision(width, height, subdivisions, w0, wf, h0, hf);
     
     Direction d;
+    Point p;
     Ray ray;
     vector<RGB> rayResult(rpp);
     Camera camera = scene.getCamera();
@@ -118,10 +119,11 @@ void PathTracer::applyToSubimage(Image& img, Scene scene, int rpp, int subdivisi
                     *          image[i, j] = projectionPlane[-2i/nx +1, -2j/ny +1]
                     *          we will also add a random factor for antialias            
                     */
-                d.setAll(((-2*i + rng.getNumber(0,1))/width + 1) , (-2*j + rng.getNumber(0,1))/height +1 , 1);
+                p.setAll(((-2.0*i + rng.getNumber(0,1))/width + 1) , (-2.0*j + rng.getNumber(0,1))/height +1 , 1);
+                p = camera.changeToGlobalCoordinates(p);
+                d = p - o;
                 d.normalize();
 
-                d = camera.changeToGlobalCoordinates(d);
 
                 ray.setOrigin(o);
                 ray.setDirection(d);    //Set the new direction as the ray's direction

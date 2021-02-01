@@ -7,6 +7,7 @@
 #include "../color/RGB.hpp"
 #include "../rng.hpp"
 #include "../vfield/Operations.hpp"
+#include "../globals.hpp"
 
 //Number of possible events upon hitting a non-emitting object
 #define N_EVENTS 4
