@@ -39,19 +39,20 @@ int Ray::findIntersectionWith(ShapePtr shape, float solutions[]){
 // @param light Will be modified with the contribution of the light point
 // @param destination Light point whose contribution will be calculated
 // @param lastShape Smart pointer with the shape the shadow ray is being casted from
-// @returns NO_EVENT if an obstacle was found. Otherwise, LIGHTFOUND
+// @returns false if and only if an obstacle was found.
 //***********************************************************************
-Event Ray::getShadowRayResult(Scene& scene, RGB& light, LightPoint destination, ShapePtr lastShape){
+bool Ray::getShadowRayResult(Scene& scene, RGB& light, LightPoint destination, ShapePtr lastShape){
     ShapePtr closestShape = nullptr;
     ShapePtr shape;
     float solutions[2];
 
     int nShapes = scene.shapeN();
-    bool foundObstacle = false;
+    //last shape's normal and this direction should be in the same direction (dot pruduct must be >0)
+    bool foundObstacle = (lastShape->getNormalAtPoint(this->origin) * this->dir <= 0);
     int nIntersections;
     float dist = distance(origin, destination.getLocalization());
     float dist2;
-    
+
     for(int s = 0; s < nShapes && !foundObstacle; s++){ //Iterate through all shapes in scene
         shape = scene.getShape(s);
         nIntersections = findIntersectionWith(shape, solutions); //Find intersection with ray
@@ -65,9 +66,10 @@ Event Ray::getShadowRayResult(Scene& scene, RGB& light, LightPoint destination, 
         }
     }
     if(!foundObstacle){
-        light = light + destination.getEmission() * max(lastShape->getNormalAtPoint(this->origin) * this->dir, 0.0f) * lastShape->getMaterial().getCoefficient(DIFFUSION) / (dist * dist * M_PI);
+        light = light + destination.getEmission() * (lastShape->getNormalAtPoint(this->origin) * this->dir) * lastShape->getMaterial().getCoefficient(DIFFUSION) / (dist * dist * M_PI);
     }
-    return foundObstacle ? NO_EVENT : LIGHTFOUND;
+
+    return !foundObstacle;
 }
 
 //***********************************************************************
@@ -81,17 +83,17 @@ Event Ray::getShadowRayResult(Scene& scene, RGB& light, LightPoint destination, 
 Event Ray::castShadowRays(Scene& scene, RGB& light, Point origin, ShapePtr lastShape){
     Ray shadowRay;
     shadowRay.setOrigin(origin);
-    Direction dir;
+    Direction d;
     Point dest;
-    Event e = NO_EVENT;
+    bool e = false;
 
     for(int i = 0; i < scene.lightPN(); i++){
-        dir = scene.getLightPoint(i).getLocalization() - origin;
-        dir.normalize();
-        shadowRay.setDirection(dir);
-        e = shadowRay.getShadowRayResult(scene, light, scene.getLightPoint(i), lastShape);
+        d = scene.getLightPoint(i).getLocalization() - origin;
+        d.normalize();
+        shadowRay.setDirection(d);
+        e |= shadowRay.getShadowRayResult(scene, light, scene.getLightPoint(i), lastShape);
     }
-    return e;
+    return e? LIGHTFOUND : NO_EVENT;
 }
 
 //***********************************************************************

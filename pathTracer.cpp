@@ -23,7 +23,7 @@ void PathTracer::pathTrace(Image& img, Scene scene, int rpp){
     if(nShapes > 0){
         int nThreads = thread::hardware_concurrency() - 1;
         //uncomment this line for debug purposes
-        //nThreads = 0;
+        nThreads = 0;
 
         subdivisions = numberOfSubdivisions(width, height);
 
@@ -161,7 +161,7 @@ int PathTracer::numberOfSubdivisions(int width, int height){
 // @param h0 Will store the final height of the subdivision
 //***********************************************************************
 void PathTracer::getSubdivision(const int w, const int h, const int n, int& w0, int& wf, int& h0, int& hf){
-    const int stepw = w/n, steph = h/n;
+    const int stepw = ceil(w/n), steph = ceil(h/n);
     unique_lock<mutex> lck(mtx);
     while(!ready){
         cv.wait(lck);

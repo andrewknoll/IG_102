@@ -86,7 +86,6 @@ void Material::recalculateWithFresnel(RGB k[3], float Pk[], RGB n0, RGB n1, floa
     //This would mean the normal is flipped with respect to where the ray is coming from
     //(most likely the ray is "inside" the shape)
     if(cosine_in < 0) cosine_in = -cosine_in;
-    if(cosine_out < 0) cosine_out = -cosine_out;
     RGB t0 = n1 * cosine_in, t1 = n0*cosine_out;
     RGB t2 = n0 * cosine_in, t3 = n1*cosine_out;
     RGB par = (t0 - t1) / (t0 + t1), per = (t2 - t3) / (t2 + t3);
@@ -317,8 +316,7 @@ Event Material::calculateRayCollision(RGB& tp, RGB& il, Direction rd, Direction&
 
         //Apply Fresnel Equations
         if(type == DIELECTRIC){
-            //Snell's Law is applied taking the negative angle into account
-            float incident_angle = -findAngle(rd, normal);
+            float incident_angle = findAngle(rd, normal);
             if(normal * rd<0){
                 //Dot product is negative when the angle is in the second or third quadrant
                 //Which means one of the components of the vectors is in the opposite sense
@@ -350,31 +348,34 @@ Event Material::calculateRayCollision(RGB& tp, RGB& il, Direction rd, Direction&
             else{
                 tp = tp * operand;
             }
-            if(cosine > 0){
-                normal = -normal;
-            }
         }
 
         //Calculate direction of the next bounce
         switch(e){
             case DIFFUSION: //Sampled by cosine sampling
                 //Normal * rd < 0 so secondary rays are always casted in the opposite direction of rd
+                if(cosine > 0){
+                    normal = -normal;
+                }
                 getAnglesByCosineSampling(theta, phi);
                 nd = Direction(sinf(theta)*cosf(phi), sinf(theta)*sinf(phi), cosf(theta));
                 nd = baseChange(nd, t1, t2, normal, cp);
                 break;
             case SPECULAR:  //Following reflection law
+                if(cosine > 0){
+                    normal = -normal;
+                }
                 nd = rd - 2 * (rd * normal) * normal;
                 break;
             case REFRACTION:{   //Following Snell's law
                 float n = n0.max() / n1.max();
-                if(cosine < 0){ //cosine must be positive
-                    cosine = -cosine;
-                }
 
                 float sine2thetaT = n*n * (1- cosine * cosine);
 
                 if(sine2thetaT > 1){    //Total Internal Reflection
+                    if(cosine > 0){
+                        normal = -normal;
+                    }
                     nd = rd - 2 * (rd * normal) * normal;
                 }
                 else{

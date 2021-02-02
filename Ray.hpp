@@ -29,7 +29,7 @@ class Ray{
 
         int findIntersectionWith(ShapePtr shape, float solutions[]);
         RGB getRayResult(Scene& scene);
-        Event getShadowRayResult(Scene& scene, RGB& initial, LightPoint destination, ShapePtr lastShape);
+        bool getShadowRayResult(Scene& scene, RGB& initial, LightPoint destination, ShapePtr lastShape);
         Event castShadowRays(Scene& scene, RGB& initial, Point origin, ShapePtr lastShape);
 };
 
