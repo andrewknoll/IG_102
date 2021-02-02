@@ -11,7 +11,7 @@
 #include <memory>
 #include "globals.hpp"
 #include <chrono>
-#define N_SCENES 10
+#define N_SCENES 11
 
 using ScenePtr = shared_ptr<Scene>;
 
@@ -296,7 +296,8 @@ ScenePtr scene5(){
 
 }
 
-ScenePtr scene6(){
+
+ScenePtr scene6(bool useFresnel){
     ScenePtr scene = make_shared<Scene>(400, 400);
     scene->buildCameraFromHFOV(3*M_PI/5, Point(0,0,0));
 
@@ -323,9 +324,15 @@ ScenePtr scene6(){
     Material dielectric;
     dielectric.setAsDielectric(0.05, RGB(1.2, 1.2, 1.2));
 
+    Material custom;
+    if(!useFresnel){
+        custom.setAsCustomMaterial(RGB(0,0,0), RGB(0.1,0.1,0.1), RGB(1.2,1.2,1.2));
+    }
+
     for(int i = 0; i < 5; i++){
         dielectricSpheres[i] = make_shared<Sphere>(Direction(0, 0, 1), Point(i*1.2-3, -4, 4));
-        dielectricSpheres[i]->setMaterial(dielectric);
+        if(useFresnel) dielectricSpheres[i]->setMaterial(dielectric);
+        else dielectricSpheres[i]->setMaterial(custom);
         scene->addShape(dielectricSpheres[i]);
     }
     
@@ -467,7 +474,10 @@ int main(int argc, char* argv[]){
             s = scene5();
             break;
         case 10:
-            s = scene6();
+            s = scene6(true);
+            break;
+        case 11:
+            s = scene6(false);
             break;
     }
     //-----------------------------------------------------------------------------

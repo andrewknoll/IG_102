@@ -23,7 +23,7 @@ void PathTracer::pathTrace(Image& img, Scene scene, int rpp){
     if(nShapes > 0){
         int nThreads = thread::hardware_concurrency() - 1;
         //uncomment this line for debug purposes
-        nThreads = 0;
+        //nThreads = 0;
 
         subdivisions = numberOfSubdivisions(width, height);
 
