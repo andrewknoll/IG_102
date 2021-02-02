@@ -32,7 +32,7 @@ $ .\main -<nombre del parámetro> [<valor/es del parámetro>]
 | output-name | Nombre del fichero de salida donde se almacena la imagen resultante. | output.ppm, output.bmp | Cadena de caracteres |
 | width | Anchura en píxeles de la imagen. | 400 | Z^+^ |
 | heigth | Altura en píxeles de la imagen. | 400 | Z^+^ |
-| scene | Número de la escena a procesar. | 2 | {1-10} |
+| scene | Número de la escena a procesar. | 2 | {1-11} |
 | rpp | Número de rayos por pixel | 10 | Z^+^ |
 | tone-mapping | Tipo de tone-mapping que se aplica a la imagen resultante | 5 (Reinhard 2002) | {0, 1, 2, 3, 4, 5, 6} |
 | bmp | Se utiliza para especificar el formato del fichero de salida como bmp | false |  |

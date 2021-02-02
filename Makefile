@@ -111,4 +111,4 @@ $(main).o: $(main).cpp
 
 ##clear
 clean:
-	rm -rf *.o $(plane) $(shape) $(sphere) $(gamma) $(cgamma) $(rein02) $(rein05) $(main).o $(main)
+	rm -rf *.o $(plane) $(shape) $(sphere) $(gamma) $(cgamma) $(rein02) $(rein05) $(main).o #$(main)
