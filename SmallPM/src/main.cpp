@@ -57,6 +57,9 @@ int main(int argc, char* argv[])
 				 max_shots = 100000, 
 				 nb_nearest_photons = 10;
 
+	//ray traced direct illumination
+	bool compute_direct = false;
+
 	// ---------------------------------------------------------------------
 	// Parse input
 	for( int i=1; i<argc; ++i)
@@ -72,6 +75,7 @@ int main(int argc, char* argv[])
 		if( !strcmp("-pm-photons-caustic",argv[i]) ) {++i; photons_caustic = atoi(argv[i]); }
 		if( !strcmp("-pm-max-photons-shot",argv[i]) ) {++i; max_shots = atoi(argv[i]); }
 		if( !strcmp("-pm-nb-nearest-neighbor",argv[i]) ) {++i; nb_nearest_photons = atoi(argv[i]); }
+		if( !strcmp("-pm-raytraced-direct-illumination",argv[i]) ) {compute_direct = true; }
 
 	}
   
@@ -195,7 +199,7 @@ int main(int argc, char* argv[])
 	// Create Film and rendering engine
 	//
 	film = new Film(sizex,sizey);
-	pm = new PhotonMapping(w, photons_global, photons_caustic, max_shots, nb_nearest_photons );
+	pm = new PhotonMapping(w, photons_global, photons_caustic, max_shots, nb_nearest_photons, compute_direct);
 	engine = new RenderEngine(w, film, &camera, pm);
 	
 	engine->render(name_file);	

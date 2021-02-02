@@ -219,7 +219,7 @@ void PhotonMapping::preprocess()
 		//Create the ray with the origin on the light's position, and with the sampled direction
 		r = Ray(p, d);
 		
-	} while (trace_ray(r, intensities, global_photons[idx], caustic_photons[idx], m_raytraced_direct));
+	} while (trace_ray(r, intensities, global_photons[idx], caustic_photons[idx], !m_raytraced_direct));
 	
 	//We multiply the flux of every photon to 4*PI since 1/(4*PI) is the probability of
 	//any direction for the photon 
@@ -267,13 +267,17 @@ Vector3 PhotonMapping::shade(Intersection &it0)const
 	Ray path;
 	Real pdf;
 
-	if(!m_raytraced_direct){
+	if(m_raytraced_direct && !it.intersected()->material()->is_delta()){
 		//Since trace_ray is not storing direct ilumination's photons, we need to trace shadow rays to the lights to get their contribution
 		int no_lights = world->nb_lights();
 		for(int i = 0; i < no_lights; i++){
-			L += world->light(i).get_incoming_light(it.get_position());
+			if(world->light(i).is_visible(it.get_position())){
+				float distance2 = (world->light(i).get_position() - it.get_position()).length2();
+				auto dot_product_result = dot_abs(world->light(i).get_incoming_direction(it.get_position()).normalize(), it.get_normal());
+				auto brdf = it.intersected()->material()->get_albedo(it) / M_PI;
+				L += world->light(i).get_incoming_light(it.get_position()) * brdf *  dot_product_result / distance2;
+			}
 		}
-
 	}
 	
 	//Based on function trace_ray
@@ -285,9 +289,8 @@ Vector3 PhotonMapping::shade(Intersection &it0)const
 
 		it.intersected()->material()->get_outgoing_sample_ray(it, path, pdf);
 		path.shift();
-		world->first_intersection(path, it);	
-		//Preguntar
-		W = W * it.intersected()->material()->get_albedo(it) / pdf;
+		world->first_intersection(path, it);
+		W = W * it.intersected()->material()->get_albedo(it);
 	}
 
 	//Since we're taking samples in a circle, we have to divide the energy by the area of the circle (pi*r^2)
