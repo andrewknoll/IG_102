@@ -174,18 +174,16 @@ int russian_roulette(std::vector<Real> acc_prob){
 }
 
 //*********************************************************************
-// TODO: Implement the preprocess step of photon mapping,
-// where the photons are traced through the scene. To do it,
-// you need to follow these steps for each shoot:
-//  1 - Sample a world's light source in the scene to create
+// Preprocess step of photon mapping, where the photons are traced 
+// through the scene. To do it, it follows these steps for each shoot:
+//  1 - Samples a world's light source in the scene to create
 //		the initial direct photon from the light source.
-//	2 - Trace the photon through the scene storing the inter-
-//		sections between the photons and matter. You can use
+//	2 - Traces the photon through the scene storing the inter-
+//		sections between the photons and matter. Uses
 //		the function 'trace_ray' for this purpose.
-//	3 - Finally, once all the photons have been shot, you'll
-//		need to build the photon maps, that will be used later
-//		for rendering. 
-//		NOTE: Careful with function
+//	3 - Finally, once all the photons have been shot, it
+//		builds the photon maps, that will be used later
+//		for rendering.
 //---------------------------------------------------------------------
 void PhotonMapping::preprocess()
 {
@@ -248,14 +246,12 @@ void PhotonMapping::preprocess()
 }
 
 //*********************************************************************
-// TODO: Implement the function that computes the rendering equation 
+// Function that computes the rendering equation 
 // using radiance estimation with photon mapping, using the photon
-// maps computed as a proprocess. Note that you will need to handle
-// both direct and global illumination, together with recursive the 
-// recursive evaluation of delta materials. For an optimal implemen-
-// tation you should be able to do it iteratively.
-// In principle, the class is prepared to perform radiance estimation
-// using k-nearest neighbors ('m_nb_photons') to define the bandwidth
+// maps computed as a proprocess. 
+// Handles both direct and global illumination, together with recursive the 
+// recursive evaluation of delta materials iteratively.
+// Uses k-nearest neighbors ('m_nb_photons') to define the bandwidth
 // of the kernel.
 //---------------------------------------------------------------------
 Vector3 PhotonMapping::shade(Intersection &it0)const
