@@ -158,7 +158,7 @@ int PathTracer::numberOfSubdivisions(int width, int height){
 // @param w0 Will store the initial width of the subdivision
 // @param wf Will store the final width of the subdivision
 // @param h0 Will store the initial height of the subdivision
-// @param h0 Will store the final height of the subdivision
+// @param hf Will store the final height of the subdivision
 //***********************************************************************
 void PathTracer::getSubdivision(const int w, const int h, const int n, int& w0, int& wf, int& h0, int& hf){
     const int stepw = ceil(w/n), steph = ceil(h/n);
