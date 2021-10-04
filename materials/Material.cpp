@@ -330,12 +330,9 @@ Event Material::calculateRayCollision(RGB& tp, RGB& il, Direction rd, Direction&
                 n0 = refractive_index;
                 n1 = RGB(1,1,1);
             }
-            
-            
-
             recalculateWithFresnel(k, acc_k, n0, n1, incident_angle, applySnell(n0, n1, incident_angle));
         }
-        //Do russian roulette with Fresnel's results (if Fresnel was not apply, normal probabilities will be used)
+        //Do russian roulette with Fresnel's results (if Fresnel was not applied, normal probabilities will be used)
         e = russianRoulette(acc_k, init);
 
         //Modify Throughput
